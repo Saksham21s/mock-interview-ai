@@ -1,22 +1,48 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { fetchTestimonials } from "../redux/testimonialsSlice";
+import { fetchTestimonials, setSlidesPerView } from "../redux/testimonialsSlice";
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay } from 'swiper/modules';
+import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
-import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
 
 const Testimonial = () => {
     const dispatch = useDispatch();
     const { data: testimonials, loading, error } = useSelector((state) => state.testimonials);
+    const slidesPerView = useSelector((state) => state.testimonials.slidesPerView);
 
+    // Fetch testimonials only if they haven't been loaded yet
     useEffect(() => {
-        dispatch(fetchTestimonials());
+        if (testimonials.length === 0) {
+            dispatch(fetchTestimonials());
+        }
+    }, [dispatch, testimonials.length]);
+
+    // Handle resize with debouncing
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            let newSlidesPerView = 3;
+
+            if (width <= 480) newSlidesPerView = 1;
+            else if (width <= 768) newSlidesPerView = 2;
+
+            dispatch(setSlidesPerView(newSlidesPerView));
+        };
+
+        // Run once initially
+        handleResize();
+
+        let resizeTimeout;
+        const debounceResize = () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(handleResize, 200); // Debounced to avoid frequent triggers
+        };
+
+        window.addEventListener('resize', debounceResize);
+
+        return () => window.removeEventListener('resize', debounceResize);
     }, [dispatch]);
-
-    useEffect(() => {
-    }, [testimonials]);
 
     return (
         <section className="testimonials-section">
@@ -26,14 +52,13 @@ const Testimonial = () => {
             {error && <p>{error}</p>}
 
             <Swiper
-                modules={[Pagination, Autoplay]}
+                modules={[Autoplay]}
                 spaceBetween={30}
-                slidesPerView={3}
-                loop={true}
+                slidesPerView={slidesPerView}
+                loop={false}
                 autoplay={{ delay: 3000, disableOnInteraction: false }}
-                pagination={{ clickable: true }}
             >
-                {testimonials && testimonials.map((testimonial, index) => (
+                {testimonials.map((testimonial, index) => (
                     <SwiperSlide key={testimonial.id || index}>
                         <div className="testimonial-card">
                             <div className="testimonial-header">
@@ -41,6 +66,7 @@ const Testimonial = () => {
                                     src={testimonial.image}
                                     alt={testimonial.name}
                                     className="testimonial-user-image"
+                                    loading="lazy"
                                 />
                                 <div className="testimonial-user-info">
                                     <h3>{testimonial.name}</h3>

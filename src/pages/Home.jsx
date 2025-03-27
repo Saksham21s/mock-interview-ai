@@ -30,7 +30,7 @@ export default function HomePage() {
               Unlock real-time AI-driven feedback tailored to your job profile.
             </p>
             <div className="button-group">
-              <CustomButton className="cta-button" onClick={() => navigate('/interview-practice')}>
+              <CustomButton className="cta-button" onClick={() => navigate('/interview')}>
                 Get Started
               </CustomButton>
               <a href="https://jobscraft.vercel.app/" target="_blank" rel="noopener noreferrer">
