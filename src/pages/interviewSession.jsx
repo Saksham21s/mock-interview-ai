@@ -6,7 +6,7 @@ import { setResponses, setTimer, setCurrentRound, setCurrentQuestionIndex, setUs
 import Modal from '../components/ModelOverlay';
 import { questionsData } from './questions';
 import Editor from '@monaco-editor/react';
-import '../styles/Interview.scss';
+import '../styles/Interview.css';
 
 const InterviewPage = () => {
   const navigate = useNavigate();
