@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Testimonial  from "./Testimonial";
-import Footer from "../components/Footer";
+// import Footer from "../components/Footer";
 import hero from "../assets/hero.svg";
 import feedback from "../assets/feedback.webp";
 import customised from "../assets/for-you.webp";
@@ -95,7 +95,7 @@ export default function HomePage() {
       <Testimonial/>
 
       {/* Footer */}
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

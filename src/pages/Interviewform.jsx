@@ -2,7 +2,9 @@ import interview from "../assets/interview.svg";
 import { FaFileUpload } from "react-icons/fa";
 import React, { useState, useRef } from "react";
 import { FaUserGraduate, FaBriefcase, FaArrowRight } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { updateFormData } from "../redux/interviewformSlice";
 import "../styles/interview.min.css";
 import arrow from "../assets/arrow.png";
 
@@ -21,14 +23,18 @@ const experienceLevels = {
 };
 
 const InterviewForm = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    jobRole: "",
-    experience: "",
-    skills: [],
-    resume: null,
-  });
+  const reduxFormData = useSelector((state) => state.interview || {});
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  const [formData, setFormData] = useState({
+    name: reduxFormData.name || "",
+    jobRole: reduxFormData.jobRole || "",
+    experience: reduxFormData.experience || "",
+    skills: reduxFormData.skills || [],
+    resume: reduxFormData.resume || null,
+  });
+  
   const [uploadedFile, setUploadedFile] = useState(null);
 
   const handleChange = (e) => {
@@ -77,8 +83,27 @@ const InterviewForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Submitted", formData);
+    const resumeFile = formData.resume;
+    if (resumeFile instanceof Blob) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        localStorage.setItem("uploadedResume", reader.result);
+        dispatch(
+          updateFormData({
+            ...formData,
+            resume: resumeFile.name,
+            uploadedFile: reader.result,
+          })
+        );
+        navigate("/interview-session");
+      };
+      reader.readAsDataURL(resumeFile);
+    } else {
+      dispatch(updateFormData(formData));
+      navigate("/interview-session");
+    }
   };
+  
 
   const selectedSkills = jobData[formData.jobRole] || [];
   const additionalSkills = experienceLevels[formData.experience] || [];
