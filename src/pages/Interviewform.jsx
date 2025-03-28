@@ -5,7 +5,7 @@ import { FaUserGraduate, FaBriefcase, FaArrowRight } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { updateFormData } from "../redux/interviewformSlice";
-import "../styles/interview.min.css";
+import "../styles/interview.css";
 import arrow from "../assets/arrow.png";
 
 const jobData = {
