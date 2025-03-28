@@ -262,6 +262,10 @@ $error-color: #ef233c;
   padding: 5rem 1rem;
   background-color: var(--bg-light);
 
+  @media (max-width: 480px) {
+    padding: 2rem;
+  }
+
   .dark-mode & {
     background-color: var(--bg-dark);
   }
@@ -422,6 +426,12 @@ $error-color: #ef233c;
   .html.dark & {
     background-color: #1e1e2f;
   }
+
+  
+  @media (max-width: 480px) {
+    flex-direction: column;
+    padding: 0.5rem;
+  }
 }
 
 .interview-form__text-section {
@@ -561,6 +571,10 @@ $error-color: #ef233c;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.2rem;
 
+    @media (max-width:480px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
     .interview-form__checkbox-label {
       display: flex;
       align-items: center;
@@ -607,6 +621,10 @@ $error-color: #ef233c;
     align-items: center;
     cursor: pointer;
     transition: all 300ms ease-in-out;
+
+    @media (max-width: 480px) {
+      width: 80%;
+    }
 
     .interview-form__file-icon {
       font-size: 3rem;
@@ -757,15 +775,15 @@ $error-color: #ef233c;
     width: 100%;
   }
 }
-
+//=========================================================================================================//
 /*======================================Interview Page starts here ======================================*/
 .interview-page {
   font-family: "Inter", sans-serif;
   background-color: $light-bg;
-  min-height: 100vh;
   padding: 2rem;
   color: $dark-text;
   user-select: none;
+  
 }
 
 .interview-container {
@@ -773,7 +791,7 @@ $error-color: #ef233c;
   margin: 0 auto;
   background: white;
   border-radius: 16px;
-  overflow: hidden;
+  overflow: auto;
   @include card-shadow;
 }
 
@@ -1206,7 +1224,6 @@ code-snippet .function {
 // Interview Completed
 .interview-completed {
   @include flex-center;
-  min-height: 100vh;
   padding: 2rem;
   background-color: $light-bg;
 
@@ -1291,6 +1308,7 @@ code-snippet .function {
     }
   }
 
+
   /*===========button design =============*/
   .action-buttons {
     display: flex;
@@ -1345,7 +1363,11 @@ code-snippet .function {
   right: 1rem;
   padding: 0.8rem 1.5rem;
   border-radius: 50px;
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--accent-color)
+  );
   color: var(--text-dark);
   font-size: 1.1rem;
   font-weight: 700;
@@ -1355,7 +1377,11 @@ code-snippet .function {
   transition: all 300ms ease-in-out;
 
   &:hover {
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    background: linear-gradient(
+      135deg,
+      var(--accent-color),
+      var(--primary-color)
+    );
     border-color: var(--secondary-color);
     color: var(--text-dark);
     transform: scale(1.1);
@@ -1388,7 +1414,7 @@ code-snippet .function {
   }
 }
 
-  /*===========button design ends =============*/
+/*===========button design ends =============*/
 
 /*=========Monaco editor for coding round ==============*/
 .rounds-nav {
@@ -1433,11 +1459,6 @@ code-snippet .function {
   .active &__label {
     color: #4361ee;
   }
-}
-
-.interview-main {
-  display: flex;
-  min-height: 70vh;
 }
 
 .question-area {
@@ -1536,7 +1557,7 @@ code-snippet .function {
     margin: 0;
     font-family: "Courier New", monospace;
     white-space: pre-wrap;
-    max-height: 150px;
+    max-height: 200px;
     overflow-y: auto;
   }
 }

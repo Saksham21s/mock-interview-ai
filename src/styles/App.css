@@ -324,51 +324,55 @@ html.dark .navbar .logo-container .logo-link .logo-text {
 }
 .homepage-wrapper .hero-section .content-container .hero-image img {
   max-height: 480px;
-  width: auto;
+  width: 100%;
+  object-fit: contain;
   border-radius: var(--border-radius);
 }
 @media (max-width: 768px) {
-  .homepage-wrapper .hero-section .hero-section .content-container {
+  .homepage-wrapper .hero-section .content-container {
     flex-direction: column;
     align-items: center;
     gap: 30px;
   }
-  .homepage-wrapper .hero-section .hero-section .content-container .text-content {
+  .homepage-wrapper .hero-section .text-content {
     max-width: 100%;
     text-align: center;
     order: 2;
   }
-  .homepage-wrapper .hero-section .hero-section .content-container .main-heading {
+  .homepage-wrapper .hero-section .main-heading {
     font-size: 2.5rem;
   }
-  .homepage-wrapper .hero-section .hero-section .content-container .sub-heading {
+  .homepage-wrapper .hero-section .sub-heading {
     font-size: 1rem;
   }
-  .homepage-wrapper .hero-section .hero-section .content-container .button-group {
+  .homepage-wrapper .hero-section .button-group {
     justify-content: center;
     gap: 15px;
   }
-  .homepage-wrapper .hero-section .hero-section .content-container .hero-image {
+  .homepage-wrapper .hero-section .hero-image {
     order: 1;
     width: 100%;
     display: flex;
     justify-content: center;
   }
-  .homepage-wrapper .hero-section .hero-section .content-container .hero-image img {
+  .homepage-wrapper .hero-section .hero-image img {
     max-height: 350px;
-    width: auto;
+    width: 100%;
+    object-fit: contain;
   }
 }
 @media (max-width: 480px) {
-  .homepage-wrapper .hero-section .hero-section .content-container .main-heading {
-    font-size: 2rem;
+  .homepage-wrapper .hero-section .content-container {
+    flex-direction: column;
   }
-  .homepage-wrapper .hero-section .hero-section .content-container .hero-image img {
+  .homepage-wrapper .hero-section .content-container .text-content .main-heading {
+    font-size: 2.1rem;
+    text-align: center;
+  }
+  .homepage-wrapper .hero-section .hero-image img {
     max-height: 280px;
-  }
-  .homepage-wrapper .hero-section .homepage-wrapper .hero-section .content-container .text-content .main-heading {
-    font-size: 2.2rem;
-    text-align: left;
+    width: 100%;
+    object-fit: contain;
   }
 }
 .homepage-wrapper .features-section {
@@ -386,11 +390,23 @@ html.dark .navbar .logo-container .logo-link .logo-text {
   background-clip: text;
   color: transparent;
 }
+@media (max-width: 480px) {
+  .homepage-wrapper .features-section .section-heading {
+    font-size: 1.4rem;
+    padding-inline: 1rem;
+    font-weight: 800;
+  }
+}
 .homepage-wrapper .features-section .features-grid {
   display: flex;
   justify-content: center;
   gap: 50px;
   flex-wrap: wrap;
+}
+@media (max-width: 480px) {
+  .homepage-wrapper .features-section .features-grid {
+    gap: 8rem;
+  }
 }
 .homepage-wrapper .features-section .features-grid .feature-card {
   position: relative;
@@ -511,6 +527,7 @@ html.dark .homepage-wrapper .features-section .features-grid .feature-card .feat
 @media (max-width: 480px) {
   .homepage-wrapper .testimonials-section .section-heading {
     font-size: 2rem;
+    padding-inline: 1rem;
   }
 }
 .homepage-wrapper .testimonials-section .swiper {
@@ -583,9 +600,6 @@ html.dark .homepage-wrapper .testimonials-section .swiper .swiper-slide .testimo
 @media (max-width: 768px) {
   .homepage-wrapper .testimonials-section .swiper {
     padding: 20px 0;
-  }
-  .homepage-wrapper .testimonials-section .swiper .swiper-slide {
-    max-width: 80%;
   }
 }
 

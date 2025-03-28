@@ -79,11 +79,17 @@ const InterviewPage = () => {
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().then(() => setIsFullscreen(true));
+      containerRef.current.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+        document.body.style.overflow = 'auto'; 
+      });
     } else {
-      document.exitFullscreen().then(() => setIsFullscreen(false));
+      document.exitFullscreen().then(() => {
+        setIsFullscreen(false);
+      });
     }
   };
+  
 
   useEffect(() => {
     if (!isFullscreen && !document.fullscreenElement) {
