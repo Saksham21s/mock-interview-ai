@@ -90,6 +90,7 @@ const InterviewPage = () => {
       setIsModalOpen(true);
     }
   }, []);
+  
 
   const handleModalPrimaryAction = () => {
     setIsModalOpen(false);
