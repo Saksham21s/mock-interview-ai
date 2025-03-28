@@ -148,8 +148,8 @@ const InterviewForm = () => {
               { icon: FaArrowRight, title: "Instant Feedback", desc: "Get detailed analysis on your answers." },
             ].map((feature, index) => (
               <div key={index} className="interview-feature-card">
-                <div className="interview-feature-card__icon-container">
-                  <feature.icon className="interview-feature-card__icon" />
+                <div className="interview-feature-card__icon-container" >
+                  <feature.icon  className="interview-feature-card__icon" />
                 </div>
                 <h3>{feature.title}</h3>
                 <p>{feature.desc}</p>
