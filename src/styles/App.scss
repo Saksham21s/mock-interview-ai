@@ -130,6 +130,52 @@ body {
       }
     }
   }
+
+  .nav-container{
+    display: flex;
+    gap: 2rem;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  
+    .nav-link {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--text-light);
+      font-weight: bold;
+      font-size: 1.1rem; 
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--border-radius);
+      background: transparent;
+      transition: all var(--transition-speed);
+
+      
+      &:hover {
+        border-bottom: 2px solid var(--accent-color);
+      }
+  
+      .nav-icon {
+        margin-right: 0.5rem;
+        font-size: 1.5rem; 
+      }
+  
+      // Dark mode styles
+      html.dark & {
+        color: var(--text-dark);
+      }
+    }
+  
+    @media (max-width: 768px) {
+      .nav-link {
+       display: none;
+      }
+    }
+  }
+  
 }
 .toggle-label {
   display: flex;

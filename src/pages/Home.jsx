@@ -1,18 +1,51 @@
 import { useNavigate } from "react-router-dom";
-import Testimonial  from "./Testimonial";
-// import Footer from "../components/Footer";
+import Testimonial from "./Testimonial";
 import hero from "../assets/hero.svg";
 import feedback from "../assets/feedback.webp";
 import customised from "../assets/for-you.webp";
 import analysis from "../assets/analysis.webp";
+import React, { memo } from "react";
 
-const CustomButton = ({ className, children, ...props }) => {
-  return (
-    <button className={`custom-btn ${className}`} {...props}>
-      {children}
-    </button>
-  );
-};
+const FEATURES = [
+  {
+    title: "Accurate Feedback",
+    imgSrc: feedback,
+    description: "Get precise evaluation and actionable feedback to improve your interview answers.",
+  },
+  {
+    title: "Analyze Resume",
+    imgSrc: customised,
+    description: "AI adapts to your resume and job profile to give tailored recommendations.",
+  },
+  {
+    title: "Real-Time Analysis",
+    imgSrc: analysis,
+    description: "Immediate analysis of your mock interview to help you practice and perfect.",
+  },
+];
+
+// Custom Button Component with memoization to avoid unnecessary re-renders
+const CustomButton = memo(({ className, children, ...props }) => (
+  <button className={`custom-btn ${className}`} {...props}>
+    {children}
+  </button>
+));
+
+// Memoized FeatureCard Component
+const FeatureCard = memo(({ feature }) => (
+  <div className="feature-card">
+    <div className="feature-card-image">
+      <img src={feature.imgSrc} alt={feature.title} loading="lazy" />
+    </div>
+    <div className="feature-card-content">
+      <h3>{feature.title}</h3>
+      <p>{feature.description}</p>
+      <a href="#" className="link">Explore</a>
+    </div>
+    {/* Restoring this title section outside of content div */}
+    <h2 className="feature-card-title">{feature.title}</h2>
+  </div>
+));
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -30,13 +63,11 @@ export default function HomePage() {
               Unlock real-time AI-driven feedback tailored to your job profile.
             </p>
             <div className="button-group">
-              <CustomButton className="cta-button" onClick={() => navigate('/interview')}>
+              <CustomButton className="cta-button" onClick={() => navigate("/interview")}>
                 Get Started
               </CustomButton>
               <a href="https://jobscraft.vercel.app/" target="_blank" rel="noopener noreferrer">
-                <CustomButton className="secondary-button">
-                  Build Resume
-                </CustomButton>
+                <CustomButton className="secondary-button">Build Resume</CustomButton>
               </a>
             </div>
           </div>
@@ -46,56 +77,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features  Section */}
+      {/* Features Section */}
       <section className="features-section">
         <h2 className="section-heading">Why Choose Jobscraft AI Interview?</h2>
         <div className="features-grid">
-
-          <div className="feature-card">
-            <div className="feature-card-image">
-              <img src={feedback} alt="Accurate Feedback" />
+          {/* Restoring all features correctly with structure */}
+          {FEATURES.map((feature, index) => (
+            <div key={index}>
+              <FeatureCard feature={feature} />
             </div>
-            <div className="feature-card-content">
-              <h3>Accurate Feedback</h3>
-              <p>Get precise evaluation and actionable feedback to improve your interview answers.</p>
-              <a href="#" className="link">Explore</a>
-            </div>
-            <h2 className="feature-card-title">Accurate Feedback</h2>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-card-image">
-              <img src={customised} alt="Customized Feedback" />
-            </div>
-            <div className="feature-card-content">
-              <h3>Analyze Resume</h3>
-              <p>AI adapts to your resume and job profile to give tailored recommendations.</p>
-              <a href="#" className="link">Explore</a>
-            </div>
-            <h2 className="feature-card-title">Analyze Resume</h2>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-card-image">
-              <img src={analysis} alt="Real-Time Analysis" />
-            </div>
-            <div className="feature-card-content">
-              <h3>Real-Time Analysis</h3>
-              <p>Immediate analysis of your mock interview to help you practice and perfect.</p>
-              <a href="#" className="link">Explore</a>
-            </div>
-            <h2 className="feature-card-title">Real-Time Analysis</h2>
-          </div>
-
+          ))}
         </div>
       </section>
 
-
       {/* Testimonials Section */}
-      <Testimonial/>
-
-      {/* Footer */}
-      {/* <Footer /> */}
+      <Testimonial />
     </div>
   );
 }

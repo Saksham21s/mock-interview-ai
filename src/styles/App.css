@@ -119,6 +119,42 @@ html.dark .navbar .logo-container .logo-link .logo-text {
   text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.2);
   color: #90caf9;
 }
+.navbar .nav-container {
+  display: flex;
+  gap: 2rem;
+}
+.navbar .nav-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+.navbar .nav-links .nav-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-light);
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--border-radius);
+  background: transparent;
+  transition: all var(--transition-speed);
+}
+.navbar .nav-links .nav-link:hover {
+  border-bottom: 2px solid var(--accent-color);
+}
+.navbar .nav-links .nav-link .nav-icon {
+  margin-right: 0.5rem;
+  font-size: 1.5rem;
+}
+html.dark .navbar .nav-links .nav-link {
+  color: var(--text-dark);
+}
+@media (max-width: 768px) {
+  .navbar .nav-links .nav-link {
+    display: none;
+  }
+}
 
 .toggle-label {
   display: flex;
