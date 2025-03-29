@@ -17,14 +17,27 @@ const interviewFormSlice = createSlice({
   reducers: {
     updateFormData: (state, action) => {
       const { name, jobRole, experience, skills, resume } = action.payload || {};
+
+      // Update Redux state with the new form data
       state.name = name ?? '';
       state.jobRole = jobRole ?? '';
       state.experience = experience ?? '';
       state.skills = skills ?? [];
       state.resume = resume ?? null;
 
-      // Save updated data to session storage whenever the form updates
-      sessionStorage.setItem('interviewFormData', JSON.stringify(state));
+      // Save updated Redux state to session storage and sync jobRole explicitly
+      const updatedState = {
+        name: state.name,
+        jobRole: state.jobRole,
+        experience: state.experience,
+        skills: state.skills,
+        resume: state.resume,
+      };
+      sessionStorage.setItem('interviewFormData', JSON.stringify(updatedState));
+      sessionStorage.setItem('currentJobRole', state.jobRole); // Explicit sync of jobRole
+
+      console.log("Redux updated jobRole:", state.jobRole);  // Debugging log
+      console.log("Session Storage after update:", sessionStorage.getItem('currentJobRole'));
     },
   },
 });

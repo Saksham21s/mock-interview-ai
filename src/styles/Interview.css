@@ -911,6 +911,37 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
   margin-top: 1.5rem;
 }
 
+.score-value {
+  font-size: 1.5rem;
+}
+.score-value.excellent {
+  color: #27c93f;
+}
+.score-value.good {
+  color: #ffc107;
+}
+.score-value.average {
+  color: #ff7300;
+}
+.score-value.no-attempt {
+  color: #e57373;
+}
+
+.time-warning {
+  color: rgb(255, 56, 56);
+}
+
+.performance-breakdown {
+  display: flex;
+  justify-content: space-between;
+  margin-inline: 2rem;
+}
+@media (max-width: 480px) {
+  .performance-breakdown {
+    flex-direction: column;
+  }
+}
+
 .response-submit {
   background: #4361ee;
   color: white;
@@ -934,6 +965,52 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
   background: #6c757d;
   cursor: not-allowed;
   transform: none;
+}
+
+.text-response-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 15px;
+  border-radius: 15px;
+}
+.text-response-container textarea {
+  width: 90%;
+  height: auto;
+  border: 2px solid #252525;
+  border-radius: 10px;
+  background-color: var(--card-light-bg);
+  padding: 10px 15px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-light);
+  resize: none;
+  transition: border-color 300ms ease-in-out;
+}
+.text-response-container textarea::placeholder {
+  color: var(--text-light);
+  font-style: italic;
+}
+.text-response-container textarea:focus {
+  border-color: #4361ee;
+  outline: none;
+  box-shadow: 0 0 8px #4361ee;
+}
+.text-response-container .word-count {
+  position: absolute;
+  bottom: -1.3rem;
+  right: 4rem;
+  background-color: var(--bg-dark);
+  padding: 5px 10px;
+  border-radius: 20px;
+  color: var(--text-dark);
+  font-size: 0.85rem;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  transition: transform 300ms ease-in-out;
 }
 
 .timer-sidebar {
@@ -1114,6 +1191,19 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
   font-weight: 700;
   color: #4361ee;
 }
+.interview-completed .metric .performance-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.interview-completed .metric .performance-fill {
+  height: 100%;
+  background-color: var(--primary-color);
+  transition: width 0.5s ease-in-out;
+  border-radius: 10px;
+}
 .interview-completed .metric__label {
   color: #6c757d;
 }
@@ -1150,8 +1240,10 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
 }
 .interview-completed .action-buttons {
   display: flex;
-  gap: 1rem; /* Space between buttons */
-  margin-top: 1.5rem; /* Add some top margin */
+  gap: 1rem;
+  /* Space between buttons */
+  margin-top: 1.5rem;
+  /* Add some top margin */
 }
 .interview-completed .action-buttons .primary-button,
 .interview-completed .action-buttons .secondary-button {
@@ -1901,8 +1993,10 @@ code-snippet .function {
 }
 .interview-completed .action-buttons {
   display: flex;
-  gap: 1rem; /* Space between buttons */
-  margin-top: 1.5rem; /* Add some top margin */
+  gap: 1rem;
+  /* Space between buttons */
+  margin-top: 1.5rem;
+  /* Add some top margin */
 }
 .interview-completed .action-buttons .primary-button,
 .interview-completed .action-buttons .secondary-button {
@@ -2043,6 +2137,26 @@ code-snippet .function {
 }
 .question-header__count {
   color: #6c757d;
+}
+
+.diamond-list {
+  list-style: none;
+  padding: 0;
+}
+.diamond-list li {
+  position: relative;
+  padding-left: 30px;
+}
+.diamond-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background-color: var(--primary-color);
+  transform: rotate(45deg) translateY(-50%);
+  border-radius: 10%;
 }
 
 .question-text {

@@ -51,6 +51,7 @@ const InterviewForm = () => {
     }
   };
 
+
   const handleDivClick = () => {
     const inputElement = document.createElement("input");
     inputElement.type = "file";
@@ -84,27 +85,31 @@ const InterviewForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const resumeFile = formData.resume;
+  
+    const updateDataAndNavigate = () => {
+      // Update Redux and session storage synchronously
+      dispatch(updateFormData(formData));  
+      sessionStorage.setItem('currentJobRole', formData.jobRole);
+  
+      // Navigate after ensuring the data has been saved
+      navigate("/interview-session");
+    };
+  
     if (resumeFile instanceof Blob) {
       const reader = new FileReader();
       reader.onload = () => {
         localStorage.setItem("uploadedResume", reader.result);
-        dispatch(
-          updateFormData({
-            ...formData,
-            resume: resumeFile.name,
-            uploadedFile: reader.result,
-          })
-        );
-        navigate("/interview-session");
+        formData.resume = resumeFile.name; // Update with the file name
+        formData.uploadedFile = reader.result; // Base64 content
+  
+        updateDataAndNavigate();  // Navigate only after updating Redux and localStorage
       };
       reader.readAsDataURL(resumeFile);
     } else {
-      dispatch(updateFormData(formData));
-      navigate("/interview-session");
+      updateDataAndNavigate();  // Navigate directly if no file is uploaded
     }
   };
   
-
   const selectedSkills = jobData[formData.jobRole] || [];
   const additionalSkills = experienceLevels[formData.experience] || [];
 

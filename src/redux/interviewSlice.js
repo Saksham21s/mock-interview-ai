@@ -1,11 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+// Initial State with better session storage handling
+const savedRole = sessionStorage.getItem("currentJobRole") || 'Frontend Developer';
 const initialState = {
-  currentJobRole: 'Frontend Developer',
+  currentJobRole: savedRole,
   currentRound: 'Technical',
   currentQuestionIndex: 0,
   userResponse: '',
-  timer: 30 * 60, // 30 minutes in seconds
+  timer: 30 * 60, // 30-minute timer
   isRunning: false,
   interviewCompleted: false,
   responses: [],
@@ -26,47 +28,63 @@ const interviewSlice = createSlice({
       state.userResponse = '';
       state.output = '';
     },
+
     setCurrentQuestionIndex: (state, action) => {
       state.currentQuestionIndex = action.payload;
     },
+
     setUserResponse: (state, action) => {
       state.userResponse = action.payload;
     },
+
     setTimer: (state, action) => {
       state.timer = action.payload;
     },
+
     setIsRunning: (state, action) => {
       state.isRunning = action.payload;
     },
+
     setInterviewCompleted: (state, action) => {
       state.interviewCompleted = action.payload;
     },
+
     setResponses: (state, action) => {
       state.responses = action.payload;
     },
+
     setOutput: (state, action) => {
       state.output = action.payload;
     },
+
     setSelectedLanguage: (state, action) => {
       state.selectedLanguage = action.payload;
     },
+
     setCurrentQuestions: (state, action) => {
-      state.currentQuestions = action.payload;
-    },
+      if (action.payload && action.payload.length) {
+        state.currentQuestions = action.payload;
+      }
+    },    
+
     setAIFeedback: (state, action) => {
       state.aiFeedback = action.payload;
     },
+
     setPerformanceMetrics: (state, action) => {
       state.performanceMetrics = action.payload;
     },
+
     resetInterviewState: (state) => {
+      const savedRole = sessionStorage.getItem("currentJobRole") || state.currentJobRole;
       Object.assign(state, {
         ...initialState,
-        currentJobRole: state.currentJobRole,
+        currentJobRole: savedRole, // Preserve job role when resetting
       });
     },
+
     submitAnswer: (state) => {
-      const currentQuestion = state.currentQuestions[state.currentQuestionIndex] || {};
+      const currentQuestion = state.currentQuestions[state.currentQuestionIndex] || {}; // Prevent undefined issues
       const newResponse = {
         questionId: currentQuestion.id || '',
         round: state.currentRound,
@@ -96,26 +114,31 @@ const interviewSlice = createSlice({
         }
       }
     },
+
     setCurrentJobRole: (state, action) => {
-      state.currentJobRole = action.payload; 
+      state.currentJobRole = action.payload;
+      sessionStorage.setItem("currentJobRole", state.currentJobRole); // Sync to sessionStorage
     },
 
     generatePerformanceMetrics: (state) => {
-      const totalQuestions = state.responses.length || 1; 
+      const totalQuestions = state.responses.length || 1;
+
       const technicalQuestions = state.responses.filter((r) => r.round === 'Technical');
       const codingQuestions = state.responses.filter((r) => r.round === 'Coding');
       const behavioralQuestions = state.responses.filter((r) => r.round === 'Behavioral');
 
       const calculateScore = (filteredQuestions, baseScore, lengthThreshold) =>
-        Math.min(
-          100,
-          Math.floor(
-            (filteredQuestions.filter((q) => q.response.length > lengthThreshold).length /
-              filteredQuestions.length) *
-              100 +
-              baseScore
-          )
-        );
+        filteredQuestions.length > 0
+          ? Math.min(
+              100,
+              Math.floor(
+                (filteredQuestions.filter((q) => q.response.length > lengthThreshold).length /
+                  filteredQuestions.length) *
+                  100 +
+                  baseScore
+              )
+            )
+          : 0;
 
       const technicalScore = calculateScore(technicalQuestions, 70, 50);
       const codingScore = calculateScore(codingQuestions, 60, 0);
@@ -124,7 +147,12 @@ const interviewSlice = createSlice({
       const overallScore = Math.floor((technicalScore + codingScore + behavioralScore) / 3);
 
       state.performanceMetrics = {
-        scores: { overall: overallScore, technical: technicalScore, coding: codingScore, behavioral: behavioralScore },
+        scores: {
+          overall: overallScore,
+          technical: technicalScore,
+          coding: codingScore,
+          behavioral: behavioralScore,
+        },
         strengths: ['Good problem decomposition', 'Clear communication', 'Solid technical foundation'],
         improvements: ['Could use more examples', 'Handle edge cases better', 'More detailed explanations'],
         timePerQuestion: Math.floor((30 * 60 - state.timer) / totalQuestions),
@@ -135,6 +163,7 @@ const interviewSlice = createSlice({
         },
       };
     },
+
     generateAIFeedback: (state) => {
       if (!state.performanceMetrics) return;
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef , useMemo} from 'react';
 import { FaClock, FaCode, FaLaptopCode, FaUserTie, FaCheck, FaArrowRight, FaExpand, FaCompress, FaChartLine, FaStar, FaLightbulb, FaHome } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -22,7 +22,7 @@ const InterviewPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { jobRole: urlJobRole } = useParams();
-  
+
   const {
     responses,
     timer,
@@ -35,89 +35,97 @@ const InterviewPage = () => {
   } = useSelector(state => state.interview);
 
   // Local state
+  const memoizedQuestionsData = useMemo(() => questionsData, [questionsData]);
   const [interviewCompleted, setInterviewCompleted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+  const [showExitWarningModal, setShowExitWarningModal] = useState(false);
   const [showEndInterviewModal, setShowEndInterviewModal] = useState(false);
-  const [isRunning, setIsRunning] = useState(false); 
+  const [isRunning, setIsRunning] = useState(false);
   const [editorCode, setEditorCode] = useState('');
   const [currentQuestions, setCurrentQuestions] = useState([]);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const timerRef = useRef(null);
   const containerRef = useRef(null);
 
+  // Fetch job role from session storage as per user-entered data
   useEffect(() => {
-    const role = urlJobRole || sessionStorage.getItem('currentJobRole') || 'Frontend Developer';
-    
-    // Only update if the role has actually changed
-    if (role !== currentJobRole) {
-      dispatch(setCurrentJobRole(role));
-      sessionStorage.setItem('currentJobRole', role);
-      
-      // Reset interview state only when role changes
+    let storedRole = sessionStorage.getItem('currentJobRole');
+
+    if (!storedRole || storedRole.trim() === '') {
+      storedRole = urlJobRole || 'Frontend Developer';
+    }
+
+    if (storedRole !== currentJobRole) {
+      dispatch(setCurrentJobRole(storedRole));
+      sessionStorage.setItem('currentJobRole', storedRole);
       dispatch(resetInterviewState());
       setInterviewCompleted(false);
       setIsRunning(false);
     }
   }, [urlJobRole, currentJobRole, dispatch]);
 
+  // Save interview state to session storage
   useEffect(() => {
-    const stateToSave = {
-      responses,
-      timer,
-      currentRound,
-      currentQuestionIndex,
-      userResponse,
-      output,
-      selectedLanguage,
-      currentJobRole
-    };
-    sessionStorage.setItem('interviewState', JSON.stringify(stateToSave));
+    if (currentJobRole) {
+      const stateToSave = {
+        responses,
+        timer,
+        currentRound,
+        currentQuestionIndex,
+        userResponse,
+        output,
+        selectedLanguage,
+        currentJobRole,
+      };
+
+      sessionStorage.setItem('interviewState', JSON.stringify(stateToSave));
+    }
   }, [responses, timer, currentRound, currentQuestionIndex, userResponse, output, selectedLanguage, currentJobRole]);
 
-  // Load questions based on current job role and round
+  // Load questions dynamically based on current job role and round (Updated Logic)
   useEffect(() => {
-    if (currentJobRole && questionsData[currentJobRole]) {
+    if (currentJobRole && memoizedQuestionsData[currentJobRole]) {
       setLoadingQuestions(true);
-      
+  
+      const roundData = memoizedQuestionsData[currentJobRole][currentRound];
       let questions = [];
-      const roundData = questionsData[currentJobRole][currentRound];
-      
       if (currentRound === 'Technical') {
-        // Get 5 random technical questions
-        questions = [...roundData]
-          .sort(() => 0.5 - Math.random())
-          .slice(0, 5);
+        questions = [...roundData].sort(() => Math.random() - 0.5).slice(0, 5);
       } else {
-        questions = [...roundData]; // Use all coding/behavioral questions
+        questions = [...roundData];
       }
-
+  
       setCurrentQuestions(questions);
       setLoadingQuestions(false);
-      
-      // Reset to first question when round changes
+  
       if (questions.length > 0) {
         const firstQuestionDefaultCode = questions[0]?.defaultCode || '';
         setEditorCode(firstQuestionDefaultCode);
         dispatch(setUserResponse(''));
         dispatch(setOutput(''));
       }
+    } else {
+      console.warn("No questions found for role:", currentJobRole);
     }
-  }, [currentJobRole, currentRound, dispatch]);
+  }, [currentJobRole, currentRound, memoizedQuestionsData, dispatch]);
 
-  // Load/save interview state from/to session storage
+  // Load and restore interview state from session storage at initial render
   useEffect(() => {
     const savedState = sessionStorage.getItem('interviewState');
     if (savedState) {
       const parsedState = JSON.parse(savedState);
-      // Only update if the loaded state is different from current state
-      if (JSON.stringify(parsedState.responses) !== JSON.stringify(responses) ||
-          parsedState.timer !== timer ||
-          parsedState.currentRound !== currentRound ||
-          parsedState.currentQuestionIndex !== currentQuestionIndex ||
-          parsedState.userResponse !== userResponse ||
-          parsedState.output !== output ||
-          parsedState.selectedLanguage !== selectedLanguage) {
+  
+      if (
+        JSON.stringify(parsedState.responses) !== JSON.stringify(responses) ||
+        parsedState.timer !== timer ||
+        parsedState.currentRound !== currentRound ||
+        parsedState.currentQuestionIndex !== currentQuestionIndex ||
+        parsedState.userResponse !== userResponse ||
+        parsedState.output !== output ||
+        parsedState.selectedLanguage !== selectedLanguage
+      ) {
         dispatch(setResponses(parsedState.responses || []));
         dispatch(setTimer(parsedState.timer || 30 * 60));
         dispatch(setCurrentRound(parsedState.currentRound || 'Technical'));
@@ -127,10 +135,12 @@ const InterviewPage = () => {
         dispatch(setSelectedLanguage(parsedState.selectedLanguage || 'javascript'));
         setEditorCode(parsedState.userResponse || '');
       }
+    } else {
+      console.log("No interview state found in session storage.");
     }
-  }, []); 
+  }, [responses, timer, currentRound, currentQuestionIndex, userResponse, output, selectedLanguage, dispatch]);  
 
-  // Timer logic
+
   useEffect(() => {
     if (isRunning && timer > 0) {
       timerRef.current = setTimeout(() => {
@@ -142,57 +152,54 @@ const InterviewPage = () => {
     return () => clearTimeout(timerRef.current);
   }, [timer, isRunning, dispatch]);
 
-  // Remove the initial fullscreen modal effect (delete this)
-useEffect(() => {
-  if (!document.fullscreenElement) {
-    setIsModalOpen(true);
-  }
-}, []);
+  // Remove the initial fullscreen modal effect
+  useEffect(() => {
+    if (!document.fullscreenElement) {
+      setIsModalOpen(true);
+    }
+  }, []);
 
+  // Fullscreen effect  
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isCurrentlyFullscreen = !!document.fullscreenElement;
+      setIsFullscreen(isCurrentlyFullscreen);
 
+      // Only show exit warning if interview was running and user exits fullscreen
+      if (!isCurrentlyFullscreen && isRunning && !interviewCompleted) {
+        setShowExitWarningModal(true);
+      }
+    };
 
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
 
-// In your component's state, add:
-// State updates
-const [showWelcomeModal, setShowWelcomeModal] = useState(true); // Renamed for clarity
-const [showExitWarningModal, setShowExitWarningModal] = useState(false); // Renamed
+    // Show welcome modal only at start if not in fullscreen
+    if (!document.fullscreenElement) {
+      setShowWelcomeModal(true);
+    }
 
-// Fullscreen effect - replace existing one
-useEffect(() => {
-  const handleFullscreenChange = () => {
-    const isCurrentlyFullscreen = !!document.fullscreenElement;
-    setIsFullscreen(isCurrentlyFullscreen);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, [isRunning, interviewCompleted]);
 
-    // Only show exit warning if interview was running and user exits fullscreen
-    if (!isCurrentlyFullscreen && isRunning && !interviewCompleted) {
-      setShowExitWarningModal(true);
+  // Updated toggle function & disabling scroll when not full screen 
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen?.()
+        .then(() => {
+          setIsRunning(true);
+          setShowWelcomeModal(false);
+          document.documentElement.style.overflowY = 'auto';
+          containerRef.current.style.overflowY = 'auto';
+        })
+        .catch(err => console.error('Fullscreen error:', err));
+    } else {
+      document.exitFullscreen()
+        .then(() => {
+          document.documentElement.style.overflowY = 'hidden';
+          containerRef.current.style.overflowY = 'hidden';
+        });
     }
   };
-
-  document.addEventListener('fullscreenchange', handleFullscreenChange);
-  
-  // Show welcome modal only at start if not in fullscreen
-  if (!document.fullscreenElement) {
-    setShowWelcomeModal(true);
-  }
-
-  return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-}, [isRunning, interviewCompleted]);
-
-// Updated toggle function
-const toggleFullscreen = () => {
-  if (!document.fullscreenElement) {
-    containerRef.current?.requestFullscreen?.()
-      .then(() => {
-        setIsRunning(true);
-        setShowWelcomeModal(false); // Hide welcome modal after entering fullscreen
-      })
-      .catch(err => console.error('Fullscreen error:', err));
-  } else {
-    document.exitFullscreen();
-  }
-};
-  
 
   // Initialize fullscreen modal
   useEffect(() => {
@@ -201,27 +208,27 @@ const toggleFullscreen = () => {
     }
   }, []);
 
+  // Full screen modal
   useEffect(() => {
     const handleFullscreenChange = () => {
       if (document.fullscreenElement) {
         setIsModalOpen(false);
-      } else {
-        setIsModalOpen(true);
       }
     };
-  
+
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-  
-    // Open modal initially if not in fullscreen mode
+
     if (!document.fullscreenElement) {
       setIsModalOpen(true);
     }
-  
-    // Cleanup event listener on component unmount
+
     return () => {
+      document.documentElement.style.overflowY = 'unset';
+      document.body.style.overflowY = 'unset';
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
   }, []);
+
 
   const handleRunCode = () => {
     try {
@@ -280,10 +287,10 @@ const toggleFullscreen = () => {
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
       const prevIndex = currentQuestionIndex - 1;
-      const prevResponse = responses.find(r => 
+      const prevResponse = responses.find(r =>
         r.questionId === currentQuestions[prevIndex].id
       )?.response || '';
-      
+
       dispatch(setCurrentQuestionIndex(prevIndex));
       dispatch(setUserResponse(prevResponse));
       dispatch(setOutput(''));
@@ -297,13 +304,15 @@ const toggleFullscreen = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const calculateScore = () => {
-    const totalQuestions = responses.length;
-    const correctAnswers = responses.filter(r => 
-      r.round === 'Coding' && r.output && !r.output.includes('Error')
-    ).length;
-    return Math.min(100, Math.floor((correctAnswers / totalQuestions) * 100) + 70);
+  const getPerformanceFeedback = () => {
+    const roundsAttempted = new Set(responses.map(r => r.round)).size;
+  
+    if (roundsAttempted === 3) return { text: 'Excellent! You completed all rounds!', class: 'excellent' };
+    if (roundsAttempted === 2) return { text: 'Good job! Keep pushing to complete all rounds!', class: 'good' };
+    if (roundsAttempted === 1) return { text: 'Average! Try to attempt more rounds.', class: 'average' };
+    return { text: 'No rounds attempted. Give it a shot!', class: 'no-attempt' };
   };
+  
 
   const calculateProgress = () => {
     const totalRounds = 3;
@@ -316,34 +325,38 @@ const toggleFullscreen = () => {
     setIsRunning(false);
     setInterviewCompleted(true);
     clearTimeout(timerRef.current);
-    
+
     // Save results
     const interviewResults = {
-      score: calculateScore(),
+      score: getPerformanceFeedback(),
       responses,
       timeTaken: formatTime(30 * 60 - timer),
       jobRole: currentJobRole,
       date: new Date().toISOString()
     };
-    sessionStorage.setItem('interviewResults', JSON.stringify(interviewResults));
+    sessionStorage.setItem('interviewResults', JSON.stringify(interviewResults) || " ");
     sessionStorage.removeItem('interviewState');
   };
 
   const currentQuestion = currentQuestions[currentQuestionIndex] || {};
 
   if (interviewCompleted) {
-    const score = calculateScore();
+    const score = getPerformanceFeedback();
     return (
       <div className="interview-completed" ref={containerRef}>
-        <button className="home-button" onClick={() => navigate("/")}>
+        <button className="home-button" onClick={() => {
+          navigate("/");
+          setTimeout(() => {
+            sessionStorage.clear();
+          }, 100);
+        }}>
           <FaHome /> Return to Home
         </button>
         <div className="interview-completed__card">
           <div className="interview-completed__header">
             <h2>Interview Completed!</h2>
             <div className="score-circle">
-              <div className="score-value">{score}</div>
-              <div className="score-label">Overall Score</div>
+            <div className={`score-value ${score.class}`}>{score.text}</div>
             </div>
           </div>
 
@@ -359,7 +372,7 @@ const toggleFullscreen = () => {
                 <span className="metric__label">Time Taken</span>
               </div>
               <div className="metric">
-                <span className="metric__value">{currentJobRole}</span>
+                <span className="metric__value" style={{ fontSize: '1.3rem' }}>{currentJobRole}</span>
                 <span className="metric__label">Job Role</span>
               </div>
             </div>
@@ -386,17 +399,17 @@ const toggleFullscreen = () => {
             </div>
 
             <div className="action-buttons">
-              <button 
+              <button
                 className="primary-button"
                 onClick={() => navigate('/results')}
               >
                 View Detailed Report <FaArrowRight />
               </button>
-              <button 
+              <button
                 className="secondary-button"
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/resume-validator')}
               >
-                Review Answers
+                Validate Resume
               </button>
             </div>
           </div>
@@ -421,8 +434,8 @@ const toggleFullscreen = () => {
     <div className="interview-page" ref={containerRef}>
       {/* Progress bar */}
       <div className="overall-progress">
-        <div 
-          className="progress-fill" 
+        <div
+          className="progress-fill"
           style={{ width: `${calculateProgress()}%` }}
           data-label={`${Math.round(calculateProgress())}% Complete`}
         ></div>
@@ -436,14 +449,14 @@ const toggleFullscreen = () => {
 
         <div className="rounds-nav">
           {['Technical', 'Coding', 'Behavioral'].map((round) => (
-            <div 
-              key={round} 
+            <div
+              key={round}
               className={`rounds-nav__item ${currentRound === round ? 'active' : ''}`}
               onClick={() => dispatch(setCurrentRound(round))}
             >
               <div className="rounds-nav__icon">
-                {round === 'Technical' ? <FaLaptopCode /> : 
-                 round === 'Coding' ? <FaCode /> : <FaUserTie />}
+                {round === 'Technical' ? <FaLaptopCode /> :
+                  round === 'Coding' ? <FaCode /> : <FaUserTie />}
               </div>
               <div className="rounds-nav__label">{round}</div>
               {currentRound === round && <div className="rounds-nav__indicator"></div>}
@@ -546,16 +559,15 @@ const toggleFullscreen = () => {
             <div className="interview-info">
               <h4>Interview For:</h4>
               <p className="job-role">{currentJobRole}</p>
-              
+
               <div className="progress-tracker">
                 {['Technical', 'Coding', 'Behavioral'].map((round, index) => (
                   <div
                     key={round}
-                    className={`progress-step ${
-                      currentRound === round ||
+                    className={`progress-step ${currentRound === round ||
                       index < ['Technical', 'Coding', 'Behavioral'].indexOf(currentRound)
-                        ? 'active' : ''
-                    }`}
+                      ? 'active' : ''
+                      }`}
                   >
                     <div className="step-number">{index + 1}</div>
                     <span>{round}</span>
@@ -588,7 +600,7 @@ const toggleFullscreen = () => {
 
             <div className="interview-tips">
               <h4>Quick Tips:</h4>
-              <ul>
+              <ul className="diamond-list">
                 <li>Answer clearly and confidently</li>
                 <li>Think before you answer</li>
                 <li>Ask for clarification if needed</li>
@@ -599,79 +611,85 @@ const toggleFullscreen = () => {
           </div>
         </div>
       </div>
+      {/* Initial Welcome Modal */}
+      <Modal
+        isOpen={showWelcomeModal}
+        onClose={() => {
+          setShowWelcomeModal(false);
+          navigate('/interview');
+        }}
+        title="🚀 Ready for Your Interview?"
+        message={
+          <div className="welcome-message">
+            <p>For the best experience, we'll switch to fullscreen mode.</p>
+            <p>Tips for success:</p>
+            <ul>
+              <li>Find a quiet environment</li>
+              <li>Close distracting applications</li>
+              <li>Make sure you have enough time</li>
+            </ul>
+          </div>
+        }
+        primaryAction={{
+          label: "Start Interview",
+          onClick: toggleFullscreen,
+          icon: <FaArrowRight />
+        }}
+        secondaryAction={{
+          label: "Cancel",
+          onClick: () => {
+            navigate('/interview');
+            sessionStorage.clear();
+          },
 
-    {/* Remove the first Modal component and keep only this one: */}
-{/* Initial Welcome Modal */}
-{/* Welcome Modal (only shows at start) */}
-<Modal
-  isOpen={showWelcomeModal}
-  onClose={() => {
-    setShowWelcomeModal(false);
-    navigate('/interview');
-  }}
-  title="🚀 Ready for Your Interview?"
-  message={
-    <div className="welcome-message">
-      <p>For the best experience, we'll switch to fullscreen mode.</p>
-      <p>Tips for success:</p>
-      <ul>
-        <li>• Find a quiet environment</li>
-        <li>• Close distracting applications</li>
-        <li>• Make sure you have enough time</li>
-      </ul>
-    </div>
-  }
-  primaryAction={{
-    label: "Start Interview",
-    onClick: toggleFullscreen,
-    icon: <FaArrowRight />
-  }}
-  secondaryAction={{
-    label: "Cancel",
-    onClick: () => navigate('/interview'),
-    variant: "secondary"
-  }}
-/>
+          variant: "secondary"
+        }}
+      />
 
-{/* Exit Warning Modal (only shows if exiting fullscreen after starting) */}
-<Modal
-  isOpen={showExitWarningModal}
-  onClose={() => setShowExitWarningModal(false)}
-  title="⏸ Interview Paused"
-  message="You've exited fullscreen mode. Your interview has been paused."
-  primaryAction={{
-    label: "Resume Interview",
-    onClick: () => {
-      toggleFullscreen();
-      setShowExitWarningModal(false);
-    },
-    icon: <FaExpand />
-  }}
-  secondaryAction={{
-    label: "End Interview",
-    onClick: () => {
-      endInterview();
-      navigate('/interview');
-    },
-    variant: "danger"
-  }}
-/>
+      {/* Exit Warning Modal (only shows if exiting fullscreen after starting) */}
+      <Modal
+        isOpen={showExitWarningModal}
+        onClose={() => setShowExitWarningModal(false)}
+        title="Interview Paused"
+        message={
+          <div className="exit-warning-message">
+            <p>You've exited fullscreen mode. Your interview has been paused.</p>
+          </div>
+        }
+        primaryAction={{
+          label: "Resume Interview",
+          onClick: () => {
+            toggleFullscreen();
+            setShowExitWarningModal(false);
+          },
+          icon: <FaExpand />
+        }}
+        secondaryAction={{
+          label: "End Interview",
+          onClick: () => {
+            endInterview();
+            navigate('/interview');
+            sessionStorage.clear();
+          },
+          variant: "danger"
+        }}
+      />
 
-<Modal
-  isOpen={showEndInterviewModal}
-  onClose={() => setShowEndInterviewModal(false)}
-  title="End Interview?"
-  message="Are you sure you want to end the interview? Your progress will be saved."
-  primaryAction={{
-    label: "Yes, End Now",
-    onClick: endInterview,
-    variant: "danger"
-  }}
-  secondaryAction={{
-    label: "Continue Interview",
-    onClick: () => setShowEndInterviewModal(false)
-  }}
-/>
+      <Modal
+        isOpen={showEndInterviewModal}
+        onClose={() => setShowEndInterviewModal(false)}
+        title="End Interview?"
+        message="Are you sure you want to end the interview ?"
+        primaryAction={{
+          label: "Yes, End Now",
+          onClick: endInterview,
+          variant: "danger"
+        }}
+        secondaryAction={{
+          label: "Continue Interview",
+          onClick: () => setShowEndInterviewModal(false)
+        }}
+      />
     </div>
   );
 };
