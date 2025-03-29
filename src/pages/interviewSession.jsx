@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaClock, FaCode, FaLaptopCode, FaUserTie, FaCheck, FaArrowRight, FaExpand, FaCompress, FaChartLine , FaStar, FaLightbulb } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { FaClock, FaCode, FaLaptopCode, FaUserTie, FaCheck, FaArrowRight, FaExpand, FaCompress, FaChartLine, FaStar, FaLightbulb, FaHome } from 'react-icons/fa';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { 
-  setResponses, 
-  setTimer, 
-  setCurrentRound, 
-  setCurrentQuestionIndex, 
-  setUserResponse, 
+import {
+  setResponses,
+  setTimer,
+  setCurrentRound,
+  setCurrentQuestionIndex,
+  setUserResponse,
   setOutput,
-  setSelectedLanguage
+  setSelectedLanguage,
+  setCurrentJobRole,
+  resetInterviewState
 } from '../redux/interviewSlice';
 import Modal from '../components/ModelOverlay';
 import CodeEditor from './CodeEditor';
@@ -19,6 +21,8 @@ import '../styles/Interview.css';
 const InterviewPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { jobRole: urlJobRole } = useParams();
+  
   const {
     responses,
     timer,
@@ -26,29 +30,198 @@ const InterviewPage = () => {
     currentQuestionIndex,
     userResponse,
     output,
-    selectedLanguage
+    selectedLanguage,
+    currentJobRole
   } = useSelector(state => state.interview);
-  
-  const [currentJobRole] = useState('Frontend Developer');
+
+  // Local state
   const [interviewCompleted, setInterviewCompleted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showEndInterviewModal, setShowEndInterviewModal] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
+  const [isRunning, setIsRunning] = useState(false); 
   const [editorCode, setEditorCode] = useState('');
+  const [currentQuestions, setCurrentQuestions] = useState([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(true);
   const timerRef = useRef(null);
   const containerRef = useRef(null);
 
-  const getRandomQuestions = (questions, count) => {
-    const shuffled = [...questions].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
+  useEffect(() => {
+    const role = urlJobRole || sessionStorage.getItem('currentJobRole') || 'Frontend Developer';
+    
+    // Only update if the role has actually changed
+    if (role !== currentJobRole) {
+      dispatch(setCurrentJobRole(role));
+      sessionStorage.setItem('currentJobRole', role);
+      
+      // Reset interview state only when role changes
+      dispatch(resetInterviewState());
+      setInterviewCompleted(false);
+      setIsRunning(false);
+    }
+  }, [urlJobRole, currentJobRole, dispatch]);
+
+  useEffect(() => {
+    const stateToSave = {
+      responses,
+      timer,
+      currentRound,
+      currentQuestionIndex,
+      userResponse,
+      output,
+      selectedLanguage,
+      currentJobRole
+    };
+    sessionStorage.setItem('interviewState', JSON.stringify(stateToSave));
+  }, [responses, timer, currentRound, currentQuestionIndex, userResponse, output, selectedLanguage, currentJobRole]);
+
+  // Load questions based on current job role and round
+  useEffect(() => {
+    if (currentJobRole && questionsData[currentJobRole]) {
+      setLoadingQuestions(true);
+      
+      let questions = [];
+      const roundData = questionsData[currentJobRole][currentRound];
+      
+      if (currentRound === 'Technical') {
+        // Get 5 random technical questions
+        questions = [...roundData]
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 5);
+      } else {
+        questions = [...roundData]; // Use all coding/behavioral questions
+      }
+
+      setCurrentQuestions(questions);
+      setLoadingQuestions(false);
+      
+      // Reset to first question when round changes
+      if (questions.length > 0) {
+        const firstQuestionDefaultCode = questions[0]?.defaultCode || '';
+        setEditorCode(firstQuestionDefaultCode);
+        dispatch(setUserResponse(''));
+        dispatch(setOutput(''));
+      }
+    }
+  }, [currentJobRole, currentRound, dispatch]);
+
+  // Load/save interview state from/to session storage
+  useEffect(() => {
+    const savedState = sessionStorage.getItem('interviewState');
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      // Only update if the loaded state is different from current state
+      if (JSON.stringify(parsedState.responses) !== JSON.stringify(responses) ||
+          parsedState.timer !== timer ||
+          parsedState.currentRound !== currentRound ||
+          parsedState.currentQuestionIndex !== currentQuestionIndex ||
+          parsedState.userResponse !== userResponse ||
+          parsedState.output !== output ||
+          parsedState.selectedLanguage !== selectedLanguage) {
+        dispatch(setResponses(parsedState.responses || []));
+        dispatch(setTimer(parsedState.timer || 30 * 60));
+        dispatch(setCurrentRound(parsedState.currentRound || 'Technical'));
+        dispatch(setCurrentQuestionIndex(parsedState.currentQuestionIndex || 0));
+        dispatch(setUserResponse(parsedState.userResponse || ''));
+        dispatch(setOutput(parsedState.output || ''));
+        dispatch(setSelectedLanguage(parsedState.selectedLanguage || 'javascript'));
+        setEditorCode(parsedState.userResponse || '');
+      }
+    }
+  }, []); 
+
+  // Timer logic
+  useEffect(() => {
+    if (isRunning && timer > 0) {
+      timerRef.current = setTimeout(() => {
+        dispatch(setTimer(timer - 1));
+      }, 1000);
+    } else if (timer === 0) {
+      endInterview();
+    }
+    return () => clearTimeout(timerRef.current);
+  }, [timer, isRunning, dispatch]);
+
+  // Remove the initial fullscreen modal effect (delete this)
+useEffect(() => {
+  if (!document.fullscreenElement) {
+    setIsModalOpen(true);
+  }
+}, []);
+
+
+
+
+// In your component's state, add:
+// State updates
+const [showWelcomeModal, setShowWelcomeModal] = useState(true); // Renamed for clarity
+const [showExitWarningModal, setShowExitWarningModal] = useState(false); // Renamed
+
+// Fullscreen effect - replace existing one
+useEffect(() => {
+  const handleFullscreenChange = () => {
+    const isCurrentlyFullscreen = !!document.fullscreenElement;
+    setIsFullscreen(isCurrentlyFullscreen);
+
+    // Only show exit warning if interview was running and user exits fullscreen
+    if (!isCurrentlyFullscreen && isRunning && !interviewCompleted) {
+      setShowExitWarningModal(true);
+    }
   };
 
-  const [currentQuestions, setCurrentQuestions] = useState(
-    getRandomQuestions(questionsData[currentJobRole]['Technical'], 5)
-  );
+  document.addEventListener('fullscreenchange', handleFullscreenChange);
+  
+  // Show welcome modal only at start if not in fullscreen
+  if (!document.fullscreenElement) {
+    setShowWelcomeModal(true);
+  }
 
-  const currentQuestion = currentQuestions[currentQuestionIndex];
+  return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+}, [isRunning, interviewCompleted]);
+
+// Updated toggle function
+const toggleFullscreen = () => {
+  if (!document.fullscreenElement) {
+    containerRef.current?.requestFullscreen?.()
+      .then(() => {
+        setIsRunning(true);
+        setShowWelcomeModal(false); // Hide welcome modal after entering fullscreen
+      })
+      .catch(err => console.error('Fullscreen error:', err));
+  } else {
+    document.exitFullscreen();
+  }
+};
+  
+
+  // Initialize fullscreen modal
+  useEffect(() => {
+    if (!document.fullscreenElement) {
+      setIsModalOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (document.fullscreenElement) {
+        setIsModalOpen(false);
+      } else {
+        setIsModalOpen(true);
+      }
+    };
+  
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+  
+    // Open modal initially if not in fullscreen mode
+    if (!document.fullscreenElement) {
+      setIsModalOpen(true);
+    }
+  
+    // Cleanup event listener on component unmount
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   const handleRunCode = () => {
     try {
@@ -74,93 +247,6 @@ const InterviewPage = () => {
     setEditorCode(currentQuestion?.defaultCode || '');
   };
 
-  const handleCodeChange = (code) => {
-    setEditorCode(code || '');
-  };
-
-  const isDevToolsOpen = () => {
-    const devToolsHeight = window.outerHeight - window.innerHeight;
-    return devToolsHeight > 100;
-  };
-
-  const checkDevTools = () => {
-    if (isDevToolsOpen() && document.fullscreenElement) {
-      document.exitFullscreen().catch(err => {
-        console.error('Error exiting fullscreen:', err);
-      });
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('copy', event => event.preventDefault());
-    document.addEventListener('paste', event => event.preventDefault());
-    const devToolsInterval = setInterval(checkDevTools, 1000);
-    
-    return () => {
-      document.removeEventListener('copy', event => event.preventDefault());
-      document.removeEventListener('paste', event => event.preventDefault());
-      clearInterval(devToolsInterval);
-    };
-  }, []);
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().then(() => {
-        setIsFullscreen(true);
-        containerRef.current.style.overflowY = 'auto';
-      });
-    } else {
-      document.exitFullscreen().then(() => {
-        setIsFullscreen(false);
-        containerRef.current.style.overflowY = 'hidden';
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (!isFullscreen && !document.fullscreenElement) {
-      setIsModalOpen(true);
-    }
-  }, [isFullscreen]);
-
-  const handleModalPrimaryAction = () => {
-    setIsModalOpen(false);
-    toggleFullscreen();
-    setIsRunning(true);
-  };
-
-  const handleModalSecondaryAction = () => {
-    setIsModalOpen(false);
-    navigate('/interview');
-  };
-
-  useEffect(() => {
-    if (isRunning && timer > 0) {
-      timerRef.current = setTimeout(() => dispatch(setTimer(timer - 1)), 1000);
-    } else if (timer === 0) endInterview();
-    return () => clearTimeout(timerRef.current);
-  }, [timer, isRunning]);
-
-  useEffect(() => {
-    if (currentRound === 'Technical') {
-      setCurrentQuestions(getRandomQuestions(questionsData[currentJobRole]['Technical'], 5));
-    } else if (currentRound === 'Coding') {
-      setCurrentQuestions(questionsData[currentJobRole]['Coding']);
-    } else {
-      setCurrentQuestions(questionsData[currentJobRole]['Behavioral']);
-    }
-    dispatch(setCurrentQuestionIndex(0));
-    dispatch(setUserResponse(''));
-    dispatch(setOutput(''));
-    setEditorCode('');
-  }, [currentRound]);
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
   const handleSubmitQuestion = () => {
     const updatedResponses = [...responses, {
       questionId: currentQuestion.id,
@@ -173,18 +259,18 @@ const InterviewPage = () => {
     }];
 
     dispatch(setResponses(updatedResponses));
-    sessionStorage.setItem('interviewResponses', JSON.stringify(updatedResponses));
 
     if (currentQuestionIndex < currentQuestions.length - 1) {
       dispatch(setCurrentQuestionIndex(currentQuestionIndex + 1));
       dispatch(setUserResponse(''));
       dispatch(setOutput(''));
-      setEditorCode('');
+      setEditorCode(currentQuestions[currentQuestionIndex + 1]?.defaultCode || '');
     } else {
       const rounds = ['Technical', 'Coding', 'Behavioral'];
       const currentRoundIndex = rounds.indexOf(currentRound);
       if (currentRoundIndex < rounds.length - 1) {
         dispatch(setCurrentRound(rounds[currentRoundIndex + 1]));
+        dispatch(setCurrentQuestionIndex(0));
       } else {
         endInterview();
       }
@@ -193,46 +279,64 @@ const InterviewPage = () => {
 
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
-      const previousQuestion = currentQuestions[currentQuestionIndex - 1];
-      const previousResponse = responses.find(response => response.questionId === previousQuestion.id)?.response || '';
-      dispatch(setCurrentQuestionIndex(currentQuestionIndex - 1));
-      dispatch(setUserResponse(previousResponse));
+      const prevIndex = currentQuestionIndex - 1;
+      const prevResponse = responses.find(r => 
+        r.questionId === currentQuestions[prevIndex].id
+      )?.response || '';
+      
+      dispatch(setCurrentQuestionIndex(prevIndex));
+      dispatch(setUserResponse(prevResponse));
       dispatch(setOutput(''));
-      setEditorCode(previousResponse);
+      setEditorCode(prevResponse);
     }
   };
 
-  const confirmEndInterview = () => setShowEndInterviewModal(true);
-  const cancelEndInterview = () => setShowEndInterviewModal(false);
-
-  const endInterview = () => {
-    setShowEndInterviewModal(false);
-    setIsRunning(false);
-    setInterviewCompleted(true);
-    clearTimeout(timerRef.current);
-  };
-
-  const getRoundIcon = (round) => {
-    switch (round) {
-      case 'Technical': return <FaLaptopCode />;
-      case 'Coding': return <FaCode />;
-      case 'Behavioral': return <FaUserTie />;
-      default: return null;
-    }
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   const calculateScore = () => {
     const totalQuestions = responses.length;
-    const correctAnswers = responses.filter(r => r.round === 'Coding' && r.output && !r.output.includes('Error')).length;
+    const correctAnswers = responses.filter(r => 
+      r.round === 'Coding' && r.output && !r.output.includes('Error')
+    ).length;
     return Math.min(100, Math.floor((correctAnswers / totalQuestions) * 100) + 70);
   };
+
+  const calculateProgress = () => {
+    const totalRounds = 3;
+    const currentRoundIndex = ['Technical', 'Coding', 'Behavioral'].indexOf(currentRound);
+    const roundProgress = (currentQuestionIndex + 1) / currentQuestions.length;
+    return ((currentRoundIndex + roundProgress) / totalRounds) * 100;
+  };
+
+  const endInterview = () => {
+    setIsRunning(false);
+    setInterviewCompleted(true);
+    clearTimeout(timerRef.current);
+    
+    // Save results
+    const interviewResults = {
+      score: calculateScore(),
+      responses,
+      timeTaken: formatTime(30 * 60 - timer),
+      jobRole: currentJobRole,
+      date: new Date().toISOString()
+    };
+    sessionStorage.setItem('interviewResults', JSON.stringify(interviewResults));
+    sessionStorage.removeItem('interviewState');
+  };
+
+  const currentQuestion = currentQuestions[currentQuestionIndex] || {};
 
   if (interviewCompleted) {
     const score = calculateScore();
     return (
       <div className="interview-completed" ref={containerRef}>
         <button className="home-button" onClick={() => navigate("/")}>
-          Move to Home
+          <FaHome /> Return to Home
         </button>
         <div className="interview-completed__card">
           <div className="interview-completed__header">
@@ -242,7 +346,7 @@ const InterviewPage = () => {
               <div className="score-label">Overall Score</div>
             </div>
           </div>
-          
+
           <div className="interview-completed__summary">
             <h3><FaChartLine /> Performance Summary</h3>
             <div className="interview-completed__metrics">
@@ -255,11 +359,11 @@ const InterviewPage = () => {
                 <span className="metric__label">Time Taken</span>
               </div>
               <div className="metric">
-                <span className="metric__value">{Math.floor(responses.length / ((30 * 60 - timer) / 60))}</span>
-                <span className="metric__label">QPM</span>
+                <span className="metric__value">{currentJobRole}</span>
+                <span className="metric__label">Job Role</span>
               </div>
             </div>
-            
+
             <div className="performance-breakdown">
               <div className="performance-category">
                 <h4><FaStar /> Technical Round</h4>
@@ -280,31 +384,18 @@ const InterviewPage = () => {
                 </div>
               </div>
             </div>
-            
-            <div className="interview-completed__feedback">
-              <div className="feedback-section">
-                <h4><FaLightbulb /> Key Strengths:</h4>
-                <ul>
-                  <li>Strong understanding of core concepts</li>
-                  <li>Effective problem-solving approach</li>
-                  <li>Clear communication of ideas</li>
-                </ul>
-              </div>
-              <div className="feedback-section">
-                <h4><FaLightbulb /> Improvement Areas:</h4>
-                <ul>
-                  <li>Could provide more detailed examples</li>
-                  <li>Work on time management</li>
-                  <li>Practice edge case consideration</li>
-                </ul>
-              </div>
-            </div>
-            
+
             <div className="action-buttons">
-              <button className="primary-button">
+              <button 
+                className="primary-button"
+                onClick={() => navigate('/results')}
+              >
                 View Detailed Report <FaArrowRight />
               </button>
-              <button className="secondary-button">
+              <button 
+                className="secondary-button"
+                onClick={() => navigate('/dashboard')}
+              >
                 Review Answers
               </button>
             </div>
@@ -314,8 +405,29 @@ const InterviewPage = () => {
     );
   }
 
+  if (loadingQuestions) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-content">
+          <h2>Preparing {currentJobRole} Interview</h2>
+          <div className="loading-spinner"></div>
+          <p>Loading {currentRound.toLowerCase()} questions...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="interview-page" ref={containerRef}>
+      {/* Progress bar */}
+      <div className="overall-progress">
+        <div 
+          className="progress-fill" 
+          style={{ width: `${calculateProgress()}%` }}
+          data-label={`${Math.round(calculateProgress())}% Complete`}
+        ></div>
+      </div>
+
       <div className="interview-container">
         <button className="fullscreen-toggle" onClick={toggleFullscreen}>
           {isFullscreen ? <FaCompress /> : <FaExpand />}
@@ -324,8 +436,15 @@ const InterviewPage = () => {
 
         <div className="rounds-nav">
           {['Technical', 'Coding', 'Behavioral'].map((round) => (
-            <div key={round} className={`rounds-nav__item ${currentRound === round ? 'active' : ''}`}>
-              <div className="rounds-nav__icon">{getRoundIcon(round)}</div>
+            <div 
+              key={round} 
+              className={`rounds-nav__item ${currentRound === round ? 'active' : ''}`}
+              onClick={() => dispatch(setCurrentRound(round))}
+            >
+              <div className="rounds-nav__icon">
+                {round === 'Technical' ? <FaLaptopCode /> : 
+                 round === 'Coding' ? <FaCode /> : <FaUserTie />}
+              </div>
               <div className="rounds-nav__label">{round}</div>
               {currentRound === round && <div className="rounds-nav__indicator"></div>}
             </div>
@@ -345,7 +464,7 @@ const InterviewPage = () => {
             {currentRound === 'Coding' ? (
               <CodeEditor
                 code={editorCode}
-                onCodeChange={handleCodeChange}
+                onCodeChange={(code) => setEditorCode(code)}
                 onRun={handleRunCode}
                 language={selectedLanguage}
                 onLanguageChange={handleLanguageChange}
@@ -362,7 +481,7 @@ const InterviewPage = () => {
                   <pre className="code-snippet">{currentQuestion.code}</pre>
                 </div>
                 <div className="mcq-options">
-                  {currentQuestion.options.map((option, index) => (
+                  {currentQuestion.options?.map((option, index) => (
                     <label key={index} className="mcq-option">
                       <input
                         type="radio"
@@ -370,7 +489,6 @@ const InterviewPage = () => {
                         value={option}
                         checked={userResponse === option}
                         onChange={(e) => dispatch(setUserResponse(e.target.value))}
-                        className="mcq-option-input"
                       />
                       <span className="mcq-option-label">{option}</span>
                     </label>
@@ -380,7 +498,6 @@ const InterviewPage = () => {
             ) : (
               <div className="text-response-container">
                 <textarea
-                  className="response-input"
                   value={userResponse}
                   onChange={(e) => dispatch(setUserResponse(e.target.value))}
                   placeholder="Type your response here..."
@@ -394,21 +511,21 @@ const InterviewPage = () => {
 
             <div className="response-actions">
               {currentQuestionIndex > 0 && (
-                <button 
+                <button
                   className="response-previous"
                   onClick={handlePreviousQuestion}
-                  disabled={!isRunning}
                 >
                   Previous
                 </button>
               )}
               <button
-                className={`response-submit ${(!userResponse.trim() && currentRound !== 'Coding') ? 'disabled' : ''}`}
+                className="response-submit"
                 onClick={handleSubmitQuestion}
-                disabled={(!userResponse.trim() && currentRound !== 'Coding') || !isRunning}
+                disabled={!userResponse.trim() && currentRound !== 'Coding'}
               >
-                {currentQuestionIndex === currentQuestions.length - 1 && 
-                 currentRound === 'Behavioral' ? 'Finish Interview' : 'Submit Answer'} 
+                {currentQuestionIndex === currentQuestions.length - 1 && currentRound === 'Behavioral'
+                  ? 'Finish Interview'
+                  : 'Submit Answer'}
                 <FaCheck />
               </button>
             </div>
@@ -425,17 +542,19 @@ const InterviewPage = () => {
                 </div>
               )}
             </div>
+
             <div className="interview-info">
               <h4>Interview For:</h4>
               <p className="job-role">{currentJobRole}</p>
+              
               <div className="progress-tracker">
                 {['Technical', 'Coding', 'Behavioral'].map((round, index) => (
-                  <div 
+                  <div
                     key={round}
                     className={`progress-step ${
-                      (currentRound === round || 
-                      (index < ['Technical', 'Coding', 'Behavioral'].indexOf(currentRound))) 
-                      ? 'active' : ''
+                      currentRound === round ||
+                      index < ['Technical', 'Coding', 'Behavioral'].indexOf(currentRound)
+                        ? 'active' : ''
                     }`}
                   >
                     <div className="step-number">{index + 1}</div>
@@ -444,10 +563,11 @@ const InterviewPage = () => {
                   </div>
                 ))}
               </div>
+
               <div className="round-progress">
                 <div className="progress-bar">
-                  <div 
-                    className="progress-fill" 
+                  <div
+                    className="progress-fill"
                     style={{
                       width: `${((currentQuestionIndex + 1) / currentQuestions.length) * 100}%`
                     }}
@@ -458,58 +578,100 @@ const InterviewPage = () => {
                 </span>
               </div>
             </div>
-            <button 
+
+            <button
               className="end-interview"
-              onClick={confirmEndInterview}
-              disabled={!isRunning}
+              onClick={() => setShowEndInterviewModal(true)}
             >
               End Interview
             </button>
+
             <div className="interview-tips">
               <h4>Quick Tips:</h4>
               <ul>
                 <li>Answer clearly and confidently</li>
                 <li>Think before you answer</li>
                 <li>Ask for clarification if needed</li>
-                {currentRound === 'Coding' && (
-                  <li>Test your code with edge cases</li>
-                )}
+                {currentRound === 'Coding' && <li>Test your code with edge cases</li>}
+                {currentRound === 'Behavioral' && <li>Use the STAR method for answers</li>}
               </ul>
             </div>
           </div>
         </div>
       </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Fullscreen Mode"
-        message="Enter Fullscreen to start the interview"
-        primaryAction={{
-          label: "Enter",
-          onClick: handleModalPrimaryAction
-        }}
-        secondaryAction={{
-          label: "Cancel",
-          onClick: handleModalSecondaryAction
-        }}
-      />
+    {/* Remove the first Modal component and keep only this one: */}
+{/* Initial Welcome Modal */}
+{/* Welcome Modal (only shows at start) */}
+<Modal
+  isOpen={showWelcomeModal}
+  onClose={() => {
+    setShowWelcomeModal(false);
+    navigate('/interview');
+  }}
+  title="🚀 Ready for Your Interview?"
+  message={
+    <div className="welcome-message">
+      <p>For the best experience, we'll switch to fullscreen mode.</p>
+      <p>Tips for success:</p>
+      <ul>
+        <li>• Find a quiet environment</li>
+        <li>• Close distracting applications</li>
+        <li>• Make sure you have enough time</li>
+      </ul>
+    </div>
+  }
+  primaryAction={{
+    label: "Start Interview",
+    onClick: toggleFullscreen,
+    icon: <FaArrowRight />
+  }}
+  secondaryAction={{
+    label: "Cancel",
+    onClick: () => navigate('/interview'),
+    variant: "secondary"
+  }}
+/>
 
-      <Modal
-        isOpen={showEndInterviewModal}
-        onClose={cancelEndInterview}
-        title="Confirm Interview Completion"
-        message="Are you sure you want to end the interview? Your progress will be saved and you can review your performance."
-        primaryAction={{
-          label: "Yes, End Interview",
-          onClick: endInterview,
-          variant: "danger"
-        }}
-        secondaryAction={{
-          label: "Continue Interview",
-          onClick: cancelEndInterview
-        }}
-      />
+{/* Exit Warning Modal (only shows if exiting fullscreen after starting) */}
+<Modal
+  isOpen={showExitWarningModal}
+  onClose={() => setShowExitWarningModal(false)}
+  title="⏸ Interview Paused"
+  message="You've exited fullscreen mode. Your interview has been paused."
+  primaryAction={{
+    label: "Resume Interview",
+    onClick: () => {
+      toggleFullscreen();
+      setShowExitWarningModal(false);
+    },
+    icon: <FaExpand />
+  }}
+  secondaryAction={{
+    label: "End Interview",
+    onClick: () => {
+      endInterview();
+      navigate('/interview');
+    },
+    variant: "danger"
+  }}
+/>
+
+<Modal
+  isOpen={showEndInterviewModal}
+  onClose={() => setShowEndInterviewModal(false)}
+  title="End Interview?"
+  message="Are you sure you want to end the interview? Your progress will be saved."
+  primaryAction={{
+    label: "Yes, End Now",
+    onClick: endInterview,
+    variant: "danger"
+  }}
+  secondaryAction={{
+    label: "Continue Interview",
+    onClick: () => setShowEndInterviewModal(false)
+  }}
+/>
     </div>
   );
 };

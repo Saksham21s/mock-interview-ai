@@ -59,10 +59,10 @@ const interviewSlice = createSlice({
     setPerformanceMetrics: (state, action) => {
       state.performanceMetrics = action.payload;
     },
-    resetInterview: (state) => {
+    resetInterviewState: (state) => {
       Object.assign(state, {
         ...initialState,
-        currentJobRole: state.currentJobRole, // Persist the job role
+        currentJobRole: state.currentJobRole,
       });
     },
     submitAnswer: (state) => {
@@ -96,21 +96,29 @@ const interviewSlice = createSlice({
         }
       }
     },
-    generatePerformanceMetrics: (state) => {
-      const totalQuestions = state.responses.length || 1; // Avoid division by 0
-      const technicalQuestions = state.responses.filter(r => r.round === 'Technical');
-      const codingQuestions = state.responses.filter(r => r.round === 'Coding');
-      const behavioralQuestions = state.responses.filter(r => r.round === 'Behavioral');
+    setCurrentJobRole: (state, action) => {
+      state.currentJobRole = action.payload; 
+    },
 
-      const calculateScore = (filteredQuestions, baseScore, lengthThreshold) => {
-        return Math.min(
+    generatePerformanceMetrics: (state) => {
+      const totalQuestions = state.responses.length || 1; 
+      const technicalQuestions = state.responses.filter((r) => r.round === 'Technical');
+      const codingQuestions = state.responses.filter((r) => r.round === 'Coding');
+      const behavioralQuestions = state.responses.filter((r) => r.round === 'Behavioral');
+
+      const calculateScore = (filteredQuestions, baseScore, lengthThreshold) =>
+        Math.min(
           100,
-          Math.floor((filteredQuestions.filter(q => q.response.length > lengthThreshold).length / filteredQuestions.length) * 100 + baseScore)
+          Math.floor(
+            (filteredQuestions.filter((q) => q.response.length > lengthThreshold).length /
+              filteredQuestions.length) *
+              100 +
+              baseScore
+          )
         );
-      };
 
       const technicalScore = calculateScore(technicalQuestions, 70, 50);
-      const codingScore = calculateScore(codingQuestions, 60, 0); // Consider non-error outputs
+      const codingScore = calculateScore(codingQuestions, 60, 0);
       const behavioralScore = calculateScore(behavioralQuestions, 75, 100);
 
       const overallScore = Math.floor((technicalScore + codingScore + behavioralScore) / 3);
@@ -155,12 +163,13 @@ export const {
   setIsRunning,
   setInterviewCompleted,
   setResponses,
+  setCurrentJobRole,
   setOutput,
   setSelectedLanguage,
   setCurrentQuestions,
   setAIFeedback,
   setPerformanceMetrics,
-  resetInterview,
+  resetInterviewState,
   submitAnswer,
   generatePerformanceMetrics,
   generateAIFeedback,

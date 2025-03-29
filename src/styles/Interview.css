@@ -753,6 +753,16 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
 }
 
+@media (max-width: 768px) {
+  .question-text {
+    font-size: 1.2rem;
+  }
+}
+@media (max-width: 480px) {
+  .question-text {
+    font-size: 1rem !important;
+  }
+}
 .response-area {
   margin-top: 3rem;
 }
@@ -796,6 +806,7 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   gap: 8px;
 }
+
 .code-snippet-header .dot {
   display: block;
   width: 12px;
@@ -803,12 +814,15 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
   border-radius: 50%;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
+
 .code-snippet-header .red {
   background-color: #ff5f56;
 }
+
 .code-snippet-header .yellow {
   background-color: #ffbd2e;
 }
+
 .code-snippet-header .green {
   background-color: #27c93f;
 }
@@ -822,6 +836,8 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
   padding: 2rem;
   margin-top: 30px;
   margin: 0;
+  overflow-x: auto;
+  white-space: pre;
 }
 
 .code-snippet .keyword {
@@ -835,14 +851,6 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
 .code-snippet .comment {
   color: #6272a4;
   font-style: italic;
-}
-
-code-snippet .number {
-  color: #bd93f9;
-}
-
-code-snippet .function {
-  color: #50fa7b;
 }
 
 /*------------Code snippet design ends here------------*/
