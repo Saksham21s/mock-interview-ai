@@ -34,10 +34,7 @@ const interviewFormSlice = createSlice({
         resume: state.resume,
       };
       sessionStorage.setItem('interviewFormData', JSON.stringify(updatedState));
-      sessionStorage.setItem('currentJobRole', state.jobRole); // Explicit sync of jobRole
-
-      console.log("Redux updated jobRole:", state.jobRole);  // Debugging log
-      console.log("Session Storage after update:", sessionStorage.getItem('currentJobRole'));
+      sessionStorage.setItem('currentJobRole', state.jobRole); 
     },
   },
 });

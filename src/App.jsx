@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Interview from './pages/Interviewform';
 import ResumeValidation from './pages/ResumeValidation';
 import InterviewSession from "./pages/interviewSession";
+import PageNotFound from "./components/PageNotFound";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function AppContent() {
         <Route path="/interview" element={<Interview />} />
         <Route path="/resume-validation" element={<ResumeValidation />} />
         <Route path="/interview-session" element={<InterviewSession />} />
+        <Route path="*" element={<PageNotFound />} /> {/* 404 Route */}
       </Routes>
     </div>
   );
