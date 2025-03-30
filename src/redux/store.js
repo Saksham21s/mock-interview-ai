@@ -3,6 +3,7 @@ import themeReducer from './themeSlice';
 import testimonialsReducer from './testimonialsSlice';
 import interviewFormReducer from './interviewformSlice';
 import interviewReducer from './interviewSlice';
+import interviewFeedbackReducer from './ReportsSlice';
 
 // Configure and export the Redux store
 export const store = configureStore({
@@ -11,5 +12,6 @@ export const store = configureStore({
     testimonials: testimonialsReducer,
     interviewForm: interviewFormReducer,
     interview: interviewReducer,
+    Feedback: interviewFeedbackReducer,
   },
 });

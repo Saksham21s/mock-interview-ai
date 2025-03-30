@@ -1,8 +1,7 @@
-export const questionsData = {
+export const questionBank = {
     // Frontend Developer questions starts here 
   "Frontend Developer": {
     "Technical": [
-      // Increased tricky output-based and text questions
       { 
         id: 1, 
         type: 'text', 
