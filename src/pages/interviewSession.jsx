@@ -344,14 +344,6 @@ const InterviewPage = () => {
     const score = getPerformanceFeedback();
     return (
       <div className="interview-completed" ref={containerRef}>
-        <button className="home-button" onClick={() => {
-          navigate("/");
-          setTimeout(() => {
-            sessionStorage.clear();
-          }, 100);
-        }}>
-          <FaHome /> Return to Home
-        </button>
         <div className="interview-completed__card">
           <div className="interview-completed__header">
             <h2>Interview Completed!</h2>
@@ -414,6 +406,14 @@ const InterviewPage = () => {
             </div>
           </div>
         </div>
+        <button className="home-button-interview-completed" onClick={() => {
+          navigate("/");
+          setTimeout(() => {
+            sessionStorage.clear();
+          }, 100);
+        }}>
+          <FaHome /> Return to Home
+        </button>
       </div>
     );
   }

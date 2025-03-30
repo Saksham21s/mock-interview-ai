@@ -8,19 +8,22 @@ import React, { memo } from "react";
 
 const FEATURES = [
   {
-    title: "Accurate Feedback",
+    title: " Accurate Feedback",
     imgSrc: feedback,
     description: "Get precise evaluation and actionable feedback to improve your interview answers.",
+    link: "/interview"
   },
   {
     title: "Analyze Resume",
     imgSrc: customised,
     description: "AI adapts to your resume and job profile to give tailored recommendations.",
+    link: "/resume-validator"
   },
   {
-    title: "Real-Time Analysis",
+    title: "Build Resume",
     imgSrc: analysis,
-    description: "Immediate analysis of your mock interview to help you practice and perfect.",
+    description: " Create a resume that is ATS-friendly and tailored to your job profile.",
+    link: "https://jobscraft.vercel.app/"
   },
 ];
 
@@ -35,12 +38,12 @@ const CustomButton = memo(({ className, children, ...props }) => (
 const FeatureCard = memo(({ feature }) => (
   <div className="feature-card">
     <div className="feature-card-image">
-      <img src={feature.imgSrc} alt={feature.title} loading="lazy" />
+      <img src={feature.imgSrc} alt={feature.title} />
     </div>
     <div className="feature-card-content">
       <h3>{feature.title}</h3>
       <p>{feature.description}</p>
-      <a href="#" className="link">Explore</a>
+      <a href={feature.link} className="link">Explore</a>
     </div>
     {/* Restoring this title section outside of content div */}
     <h2 className="feature-card-title">{feature.title}</h2>

@@ -492,8 +492,7 @@ body {
 
     .features-grid {
       display: flex;
-      justify-content: center;
-      gap: 50px;
+      justify-content:space-around;
       flex-wrap: wrap;
 
       @media (max-width: 480px) {
@@ -522,12 +521,17 @@ body {
           position: absolute;
           top: -40px;
           width: 100%;
-          max-width: 320px;
-          height: 350px;
+          max-width: 278px;
+          height: 325px;
           z-index: 100;
           box-shadow: 1px 1px 10px 3px rgba(0, 0, 0, 0.2);
           border-radius: 12px;
           transition: top 0.5s ease-in-out;
+          @media (max-width: 480px) {
+            &:hover {
+              top: -70px;
+            }
+          }
 
           img {
             width: 100%;
@@ -535,13 +539,19 @@ body {
             object-fit: cover;
             border-radius: 12px;
           }
+
+          @media (max-width: 480px) {
+            width: 275px;
+            height: 325px;
+          }
         }
 
         &:hover .feature-card-image {
-          top: -90px;
+          top: -70px;
         }
 
         .feature-card-title {
+          font-size: 1.4rem;
           font-weight: 800;
           color: #003c8f;
           text-transform: uppercase;

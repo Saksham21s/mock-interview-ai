@@ -435,8 +435,7 @@ html.dark .navbar .nav-links .nav-link {
 }
 .homepage-wrapper .features-section .features-grid {
   display: flex;
-  justify-content: center;
-  gap: 50px;
+  justify-content: space-around;
   flex-wrap: wrap;
 }
 @media (max-width: 480px) {
@@ -465,12 +464,17 @@ html.dark .homepage-wrapper .features-section .features-grid .feature-card:hover
   position: absolute;
   top: -40px;
   width: 100%;
-  max-width: 320px;
-  height: 350px;
+  max-width: 278px;
+  height: 325px;
   z-index: 100;
   box-shadow: 1px 1px 10px 3px rgba(0, 0, 0, 0.2);
   border-radius: 12px;
   transition: top 0.5s ease-in-out;
+}
+@media (max-width: 480px) {
+  .homepage-wrapper .features-section .features-grid .feature-card .feature-card-image:hover {
+    top: -70px;
+  }
 }
 .homepage-wrapper .features-section .features-grid .feature-card .feature-card-image img {
   width: 100%;
@@ -478,10 +482,17 @@ html.dark .homepage-wrapper .features-section .features-grid .feature-card:hover
   object-fit: cover;
   border-radius: 12px;
 }
+@media (max-width: 480px) {
+  .homepage-wrapper .features-section .features-grid .feature-card .feature-card-image {
+    width: 275px;
+    height: 325px;
+  }
+}
 .homepage-wrapper .features-section .features-grid .feature-card:hover .feature-card-image {
-  top: -90px;
+  top: -70px;
 }
 .homepage-wrapper .features-section .features-grid .feature-card .feature-card-title {
+  font-size: 1.4rem;
   font-weight: 800;
   color: #003c8f;
   text-transform: uppercase;
