@@ -779,13 +779,14 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
 }
 
 .response-input {
-  width: 90%;
+  width: 100%;
   min-height: 200px;
   padding: 1.5rem;
   border: 1px solid #e9ecef;
   border-radius: 8px;
   font-size: 1rem;
   line-height: 1.6;
+  color: var(--text-light);
   resize: none;
   transition: all 0.3s ease;
 }
@@ -793,6 +794,9 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
   outline: none;
   border-color: #4361ee;
   box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+html.dark .response-input {
+  color: var(--bg-dark);
 }
 
 /*------------Code snippet design starts here------------*/
@@ -988,7 +992,7 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
   border-radius: 15px;
 }
 .text-response-container textarea {
-  width: 90%;
+  width: 100%;
   height: auto;
   border: 2px solid #252525;
   border-radius: 10px;
@@ -996,7 +1000,6 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
   padding: 10px 15px;
   font-size: 1rem;
   line-height: 1.5;
-  color: var(--text-light);
   resize: none;
   transition: border-color 300ms ease-in-out;
 }
@@ -1008,6 +1011,9 @@ html.dark .interview-form .interview-form__file-input .interview-form__file-text
   border-color: #4361ee;
   outline: none;
   box-shadow: 0 0 8px #4361ee;
+}
+.html.dark .text-response-container textarea {
+  color: var(--text-light);
 }
 .text-response-container .word-count {
   position: absolute;

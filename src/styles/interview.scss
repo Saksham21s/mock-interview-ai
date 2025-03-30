@@ -918,13 +918,14 @@ $error-color: #ef233c;
 }
 
 .response-input {
-  width: 90%;
+  width:100%;
   min-height: 200px;
   padding: 1.5rem;
   border: 1px solid #e9ecef;
   border-radius: 8px;
   font-size: 1rem;
   line-height: 1.6;
+  color: var(--text-light);
   resize: none;
   transition: all 0.3s ease;
 
@@ -932,6 +933,10 @@ $error-color: #ef233c;
     outline: none;
     border-color: $primary-color;
     box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+  }
+
+  html.dark & {
+    color: var(--bg-dark);
   }
 }
 
@@ -1144,7 +1149,7 @@ $error-color: #ef233c;
   border-radius: 15px;
 
   textarea {
-    width: 90%;
+    width: 100%;
     height: auto;
     border: 2px solid #252525;
     border-radius: 10px;
@@ -1152,7 +1157,6 @@ $error-color: #ef233c;
     padding: 10px 15px;
     font-size: 1rem;
     line-height: 1.5;
-    color: var(--text-light);
     resize: none;
     transition: border-color 300ms ease-in-out;
 
@@ -1165,6 +1169,9 @@ $error-color: #ef233c;
       border-color: #4361ee;
       outline: none;
       box-shadow: 0 0 8px #4361ee;
+    }
+    .html.dark & {
+      color: var(--text-light);
     }
   }
 
