@@ -7,7 +7,7 @@ import {
   ResponsiveContainer, LabelList
 } from 'recharts';
 import '../styles/Interview.css';
-import {motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28DFF', '#FF6B6B'];
 
@@ -17,7 +17,7 @@ const InterviewFeedback = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [analysisProgress, setAnalysisProgress] = useState(0);
-  
+
 
   useEffect(() => {
     // Simulate AI analysis progress
@@ -33,10 +33,10 @@ const InterviewFeedback = () => {
 
     try {
       const sessionData = JSON.parse(
-        sessionStorage.getItem('interviewResults') || 
+        sessionStorage.getItem('interviewResults') ||
         sessionStorage.getItem('interviewResult')
       );
-      
+
       if (!sessionData) {
         throw new Error('No interview data found');
       }
@@ -45,7 +45,7 @@ const InterviewFeedback = () => {
         const processedData = processReportData(sessionData);
         setReportData(processedData);
         setLoading(false);
-      }, 2500); // Simulate AI processing time
+      }, 3500);
 
     } catch (err) {
       console.error('Error loading report:', err);
@@ -61,36 +61,36 @@ const InterviewFeedback = () => {
   if (!reportData) return <NoData />;
 
   return (
-    
-    <motion.div 
+
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
       className="feedback-container"
     >
       <FeedbackHeader data={reportData} />
-      
+
       <div className="print-controls">
         <button className="print-btn" onClick={() => window.print()}>
           📄 Print Report
         </button>
-        <button 
+        <button
           className="new-interview-btn"
-          onClick={() => {navigate('/interview'); sessionStorage.clear();}}
+          onClick={() => { navigate('/interview'); sessionStorage.clear(); }}
         >
           🚀 Start New Interview
         </button>
       </div>
-      
-      <DynamicChartsSection 
-        accuracyData={reportData.accuracyData} 
-        roundPerformance={reportData.roundPerformance} 
+
+      <DynamicChartsSection
+        accuracyData={reportData.accuracyData}
+        roundPerformance={reportData.roundPerformance}
       />
-      
+
       <DetailedFeedback responses={reportData.responses} />
-      
-      <ImprovementSection 
-        tips={reportData.improvementTips} 
+
+      <ImprovementSection
+        tips={reportData.improvementTips}
         overallScore={reportData.overallScore}
       />
     </motion.div>
@@ -108,8 +108,8 @@ const LoadingScreen = ({ progress }) => (
       </div>
       <h2>AI is analyzing your performance</h2>
       <div className="progress-container">
-        <div 
-          className="progress-bar" 
+        <div
+          className="progress-bar"
           style={{ width: `${progress}%` }}
         ></div>
         <span className="progress-text">{progress}%</span>
@@ -135,7 +135,7 @@ const getRandomLoadingTip = () => {
 
 // Enhanced Data Processing with Dynamic Scoring
 const processReportData = (sessionData) => {
-  const responses = Array.isArray(sessionData.responses) ? 
+  const responses = Array.isArray(sessionData.responses) ?
     sessionData.responses.map(enhanceResponse) : [];
 
   // Dynamic scoring based on answer length and content
@@ -143,10 +143,10 @@ const processReportData = (sessionData) => {
     const lengthScore = Math.min(res.response?.length / 100, 0.3);
     const keywordScore = calculateKeywordScore(res);
     const randomVariance = (Math.random() * 0.1) - 0.05; // ±5% variance
-    
+
     // Normalize score between 0.4-1.0 based on quality indicators
     const score = Math.min(0.4 + lengthScore + keywordScore + randomVariance, 1.0);
-    
+
     return {
       ...res,
       score: parseFloat(score.toFixed(2)),
@@ -201,20 +201,20 @@ const extractKeywords = (text) => {
 
 const calculateKeywordScore = (res) => {
   if (!res.questionText) return 0.3;
-  
+
   const questionKeywords = extractKeywords(res.questionText);
   if (questionKeywords.length === 0) return 0.3;
-  
-  const matchedKeywords = res.keywords.filter(k => 
+
+  const matchedKeywords = res.keywords.filter(k =>
     questionKeywords.some(qk => qk.includes(k) || k.includes(qk))
   ).length;
-  
+
   return Math.min(0.3, (matchedKeywords / questionKeywords.length) * 0.3);
 };
 
 const calculateRoundPerformance = (responses) => {
   const roundData = {};
-  
+
   responses.forEach(res => {
     const round = res.round || 'General';
     if (!roundData[round]) {
@@ -263,7 +263,7 @@ const generateDynamicFeedback = (response, score) => {
 const generateDynamicTips = (responses, overallScore) => {
   const tips = new Set();
   const weakResponses = responses.filter(r => r.score < 0.6);
-  
+
   // Round-specific tips
   const roundCounts = {};
   weakResponses.forEach(r => {
@@ -306,7 +306,7 @@ const generateDynamicTips = (responses, overallScore) => {
 
 // UI Components
 const ErrorMessage = ({ error }) => (
-  <motion.div 
+  <motion.div
     initial={{ scale: 0.9 }}
     animate={{ scale: 1 }}
     className="error-message"
@@ -318,7 +318,7 @@ const ErrorMessage = ({ error }) => (
     <p>{error}</p>
     <div className="error-actions">
       <button onClick={() => window.location.reload()}>🔄 Retry</button>
-      <button onClick={() =>  {window.location.href = '/interview'; sessionStorage.clear();}}>🚀 Start New Interview</button>
+      <button onClick={() => { window.location.href = '/interview'; sessionStorage.clear(); }}>🚀 Start New Interview</button>
     </div>
   </motion.div>
 );
@@ -328,7 +328,7 @@ const NoData = () => (
     <div className="no-data-icon">📊</div>
     <h3>No Interview Data Available</h3>
     <p>Complete an interview to generate your personalized report</p>
-    <button onClick={() =>{ window.location.href = '/interview'; sessionStorage.clear();}}>
+    <button onClick={() => { window.location.href = '/interview'; sessionStorage.clear(); }}>
       🎯 Start Interview
     </button>
   </div>
@@ -340,7 +340,7 @@ const FeedbackHeader = ({ data }) => {
   const scoreText = getScoreText(score);
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -20 }}
       animate={{ y: 0 }}
       className="feedback-header"
@@ -354,15 +354,23 @@ const FeedbackHeader = ({ data }) => {
           <span className="date">{data.analysisDate || new Date().toLocaleDateString()}</span>
         </div>
       </div>
-      
-      <motion.div 
+
+      <motion.div
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
         className={`score-display ${scoreClass}`}
       >
-        <div className="score-circle">
-          <span className="score-value">{score.toFixed(1)}%</span>
+        <div className="score-wrapper">
+          <div className={`score-badge ${score >= 80 ? "high-score" :
+              score >= 60 ? "mid-score" :
+                score >= 40 ? "low-score" :
+                  "no-attempt"
+            }`}>
+            <span className="score-text">{score.toFixed(1)}%</span>
+          </div>
         </div>
+
+
         <div className="score-text">
           <h3>{scoreText}</h3>
           <p>Overall Accuracy</p>
@@ -388,24 +396,24 @@ const getScoreText = (score) => {
     "Strong performance - Well done!",
     "Exceptional results - Excellent work!"
   ];
-  
+
   const index = Math.min(
     Math.floor(score / 20),
     texts.length - 1
   );
-  
+
   return texts[index];
 };
 
 const DynamicChartsSection = ({ accuracyData, roundPerformance }) => (
-  <motion.section 
+  <motion.section
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ delay: 0.2 }}
     className="charts-section"
   >
-    <ChartCard 
-      title="Answer Quality Distribution" 
+    <ChartCard
+      title="Answer Quality Distribution"
       description="Breakdown of your answers by quality score"
     >
       <ResponsiveContainer width="100%" height={300}>
@@ -424,17 +432,17 @@ const DynamicChartsSection = ({ accuracyData, roundPerformance }) => (
             label={({ name, percent }) => `${name}\n${(percent * 100).toFixed(0)}%`}
           >
             {accuracyData.map((entry, index) => (
-              <Cell 
-                key={`cell-${index}`} 
-                fill={COLORS[index % COLORS.length]} 
+              <Cell
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
               />
             ))}
           </Pie>
-          <Tooltip 
-            formatter={(value, name) => [`${value} answers`, name]} 
+          <Tooltip
+            formatter={(value, name) => [`${value} answers`, name]}
             contentStyle={{ borderRadius: '8px' }}
           />
-          <Legend 
+          <Legend
             layout="horizontal"
             verticalAlign="bottom"
             align="center"
@@ -443,8 +451,8 @@ const DynamicChartsSection = ({ accuracyData, roundPerformance }) => (
       </ResponsiveContainer>
     </ChartCard>
 
-    <ChartCard 
-      title="Round-wise Performance" 
+    <ChartCard
+      title="Round-wise Performance"
       description="Your accuracy across different interview rounds"
     >
       <ResponsiveContainer width="100%" height={300}>
@@ -452,26 +460,26 @@ const DynamicChartsSection = ({ accuracyData, roundPerformance }) => (
           <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
           <XAxis dataKey="name" />
           <YAxis domain={[0, 100]} unit="%" />
-          <Tooltip 
+          <Tooltip
             formatter={(value) => [`${value}%`, "Accuracy"]}
             contentStyle={{ borderRadius: '8px' }}
           />
           <Legend />
-          <Bar 
-            dataKey="accuracy" 
+          <Bar
+            dataKey="accuracy"
             name="Accuracy %"
             animationBegin={400}
             animationDuration={1200}
           >
             {roundPerformance.map((entry, index) => (
-              <Cell 
-                key={`cell-${index}`} 
-                fill={entry.fill || COLORS[index % COLORS.length]} 
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.fill || COLORS[index % COLORS.length]}
               />
             ))}
-            <LabelList 
-              dataKey="accuracy" 
-              position="top" 
+            <LabelList
+              dataKey="accuracy"
+              position="top"
               formatter={(value) => `${value}%`}
             />
           </Bar>
@@ -482,7 +490,7 @@ const DynamicChartsSection = ({ accuracyData, roundPerformance }) => (
 );
 
 const ChartCard = ({ title, description, children }) => (
-  <motion.div 
+  <motion.div
     whileHover={{ y: -5 }}
     className="chart-card"
   >
@@ -495,7 +503,7 @@ const ChartCard = ({ title, description, children }) => (
 );
 
 const DetailedFeedback = ({ responses }) => (
-  <motion.section 
+  <motion.section
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ delay: 0.4 }}
@@ -507,14 +515,14 @@ const DetailedFeedback = ({ responses }) => (
         Review your answers with personalized feedback
       </p>
     </div>
-    
+
     <div className="questions-grid">
       {responses.length > 0 ? (
         responses.map((item, index) => (
-          <QuestionFeedback 
-            key={`q-${index}`} 
-            item={item} 
-            index={index} 
+          <QuestionFeedback
+            key={`q-${index}`}
+            item={item}
+            index={index}
           />
         ))
       ) : (
@@ -545,17 +553,17 @@ const QuestionFeedback = ({ item, index }) => {
           {score.toFixed(1)}%
         </div>
       </div>
-      
+
       <div className="question-content">
         <h3>{item.questionText || 'No question text available'}</h3>
-        
+
         {item.questioncode && (
           <div className="code-block">
             <pre><code>{item.questioncode}</code></pre>
           </div>
         )}
       </div>
-      
+
       <div className="answer-section">
         <div className="answer-header">
           <span className="answer-label">Your Answer</span>
@@ -566,7 +574,7 @@ const QuestionFeedback = ({ item, index }) => {
         <div className="answer-text">
           {item.response || "No answer provided"}
         </div>
-        
+
         {item.output && (
           <div className="code-output">
             <span className="output-label">Code Output:</span>
@@ -574,7 +582,7 @@ const QuestionFeedback = ({ item, index }) => {
           </div>
         )}
       </div>
-      
+
       <div className="feedback-section">
         <div className="feedback-header">
           <span className="feedback-label">AI Analysis</span>
@@ -591,7 +599,7 @@ const QuestionFeedback = ({ item, index }) => {
 };
 
 const ImprovementSection = ({ tips, overallScore }) => (
-  <motion.section 
+  <motion.section
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ delay: 0.6 }}
@@ -603,7 +611,7 @@ const ImprovementSection = ({ tips, overallScore }) => (
         Recommendations tailored to your performance
       </p>
     </div>
-    
+
     <div className="improvement-cards">
       {tips.map((tip, i) => (
         <motion.div
@@ -618,7 +626,7 @@ const ImprovementSection = ({ tips, overallScore }) => (
         </motion.div>
       ))}
     </div>
-    
+
     <div className="performance-summary">
       <h3>Next Steps</h3>
       <p>

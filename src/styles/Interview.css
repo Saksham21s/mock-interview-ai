@@ -2335,6 +2335,11 @@ code-snippet .function {
   max-width: 500px;
   width: 100%;
 }
+@media (max-width: 480px) {
+  .loading-screen .ai-analysis-container {
+    max-width: 400px;
+  }
+}
 .loading-screen .ai-analysis-container .ai-head {
   width: 80px;
   height: 80px;
@@ -2464,31 +2469,53 @@ code-snippet .function {
 .feedback-header .score-display.poor {
   background: linear-gradient(135deg, rgba(248, 113, 113, 0.1), white);
 }
-.feedback-header .score-display .score-circle {
-  width: 70px;
-  height: 70px;
+.feedback-header .score-display .score-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.feedback-header .score-display .score-badge {
+  width: 85px;
+  height: 85px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 1.5rem;
-  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  position: relative;
+  transition: transform 0.3s ease-in-out;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1));
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border: 3px solid transparent;
+  text-align: center;
+  padding: 5px;
+  overflow: hidden;
 }
-.excellent .feedback-header .score-display .score-circle {
-  background: #4ade80;
+.feedback-header .score-display .score-badge.high-score {
+  border-color: #27c93f;
+  color: #27c93f;
+  background: rgba(39, 201, 63, 0.1);
 }
-.very-good .feedback-header .score-display .score-circle {
-  background: #7fd564;
+.feedback-header .score-display .score-badge.mid-score {
+  border-color: #ffc107;
+  color: #ffc107;
+  background: rgba(255, 193, 7, 0.1);
 }
-.good .feedback-header .score-display .score-circle {
-  background: #fbbf24;
+.feedback-header .score-display .score-badge.low-score {
+  border-color: #ff7300;
+  color: #ff7300;
+  background: rgba(255, 115, 0, 0.1);
 }
-.fair .feedback-header .score-display .score-circle {
-  background: #fa984b;
+.feedback-header .score-display .score-badge.no-attempt {
+  border-color: #e57373;
+  color: #e57373;
+  background: rgba(229, 115, 115, 0.1);
 }
-.poor .feedback-header .score-display .score-circle {
-  background: #f87171;
+.feedback-header .score-display .score-text {
+  font-size: 1rem;
+  font-weight: bold;
+  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
 }
 .feedback-header .score-display .score-text h3 {
   font-size: 1.2rem;
@@ -2600,6 +2627,7 @@ code-snippet .function {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   border-left: 4px solid #4361ee;
+  max-width: 100%;
 }
 .question-card.excellent {
   border-left-color: #4ade80;
@@ -2623,8 +2651,10 @@ code-snippet .function {
 .question-card .question-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 1rem;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 .question-card .question-header .round-badge {
   background: rgba(67, 97, 238, 0.1);
@@ -2634,6 +2664,7 @@ code-snippet .function {
   font-size: 0.8rem;
   font-weight: 600;
   text-transform: capitalize;
+  white-space: nowrap;
 }
 .question-card .question-header .question-number {
   font-weight: 600;
@@ -2670,7 +2701,7 @@ code-snippet .function {
   margin-bottom: 1.5rem;
 }
 .question-card .question-content h3 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   margin-bottom: 0.75rem;
   color: #1e293b;
   line-height: 1.5;
@@ -2678,7 +2709,7 @@ code-snippet .function {
 .question-card .question-content .code-block {
   background: #f8fafc;
   border-radius: 6px;
-  padding: 1rem;
+  padding: 0.8rem;
   overflow-x: auto;
   margin-top: 0.75rem;
   border: 1px solid #e2e8f0;
@@ -2686,46 +2717,47 @@ code-snippet .function {
 .question-card .question-content .code-block pre {
   margin: 0;
   font-family: "Fira Code", monospace;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   white-space: pre-wrap;
 }
-.question-card .answer-section {
+.question-card .answer-section, .question-card .feedback-section {
   background: #f8fafc;
   border-radius: 6px;
   padding: 1rem;
   margin-bottom: 1.5rem;
 }
-.question-card .answer-section .answer-header {
+.question-card .answer-section .answer-header, .question-card .answer-section .feedback-header, .question-card .feedback-section .answer-header, .question-card .feedback-section .feedback-header {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
 }
-.question-card .answer-section .answer-header .answer-label {
+.question-card .answer-section .answer-header .answer-label, .question-card .answer-section .answer-header .feedback-label, .question-card .answer-section .feedback-header .answer-label, .question-card .answer-section .feedback-header .feedback-label, .question-card .feedback-section .answer-header .answer-label, .question-card .feedback-section .answer-header .feedback-label, .question-card .feedback-section .feedback-header .answer-label, .question-card .feedback-section .feedback-header .feedback-label {
   font-weight: 600;
   color: #1e293b;
 }
-.question-card .answer-section .answer-header .answer-length {
+.question-card .answer-section .answer-header .answer-length, .question-card .answer-section .answer-header .feedback-date, .question-card .answer-section .feedback-header .answer-length, .question-card .answer-section .feedback-header .feedback-date, .question-card .feedback-section .answer-header .answer-length, .question-card .feedback-section .answer-header .feedback-date, .question-card .feedback-section .feedback-header .answer-length, .question-card .feedback-section .feedback-header .feedback-date {
   color: #64748b;
 }
-.question-card .answer-section .answer-text {
+.question-card .answer-section .answer-text, .question-card .answer-section .feedback-text, .question-card .feedback-section .answer-text, .question-card .feedback-section .feedback-text {
   white-space: pre-wrap;
   line-height: 1.6;
   color: #1e293b;
 }
-.question-card .answer-section .code-output {
+.question-card .answer-section .code-output, .question-card .feedback-section .code-output {
   margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px dashed #e2e8f0;
 }
-.question-card .answer-section .code-output .output-label {
+.question-card .answer-section .code-output .output-label, .question-card .feedback-section .code-output .output-label {
   font-weight: 600;
   font-size: 0.9rem;
   display: block;
   margin-bottom: 0.5rem;
   color: #1e293b;
 }
-.question-card .answer-section .code-output pre {
+.question-card .answer-section .code-output pre, .question-card .feedback-section .code-output pre {
   background: white;
   padding: 0.75rem;
   border-radius: 4px;
@@ -2734,30 +2766,64 @@ code-snippet .function {
   margin: 0;
   overflow-x: auto;
 }
-.question-card .feedback-section {
-  background: white;
-  border-radius: 6px;
-  padding: 1rem;
-  border: 1px solid #e2e8f0;
-}
-.question-card .feedback-section .feedback-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-}
-.question-card .feedback-section .feedback-header .feedback-label {
-  font-weight: 600;
-  color: #4361ee;
-}
-.question-card .feedback-section .feedback-header .feedback-date {
-  color: #64748b;
-}
-.question-card .feedback-section .feedback-text {
-  line-height: 1.6;
-  color: #1e293b;
-}
 
+/* 🔥 Responsive Design */
+@media (max-width: 768px) {
+  .question-card {
+    padding: 1rem;
+    border-left-width: 3px;
+  }
+  .question-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .question-header .round-badge, .question-header .score-badge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+  }
+  .question-content h3 {
+    font-size: 0.9rem;
+  }
+  .code-block {
+    padding: 0.6rem;
+  }
+  .code-block pre {
+    font-size: 0.75rem;
+  }
+  .answer-section, .feedback-section {
+    padding: 0.8rem;
+  }
+  .answer-section .answer-header, .answer-section .feedback-header, .feedback-section .answer-header, .feedback-section .feedback-header {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+}
+@media (max-width: 480px) {
+  .question-card {
+    padding: 0.8rem;
+    border-left-width: 2px;
+  }
+  .question-header {
+    gap: 0.4rem;
+  }
+  .question-header .round-badge, .question-header .score-badge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+  }
+  .question-content h3 {
+    font-size: 0.85rem;
+  }
+  .code-block {
+    padding: 0.5rem;
+  }
+  .code-block pre {
+    font-size: 0.7rem;
+  }
+  .answer-section, .feedback-section {
+    padding: 0.7rem;
+  }
+}
 /* Improvement Section */
 .improvement-section {
   margin-bottom: 3rem;
