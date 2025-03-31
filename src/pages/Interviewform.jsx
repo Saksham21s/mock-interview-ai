@@ -5,6 +5,7 @@ import { FaUserGraduate, FaBriefcase, FaArrowRight } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { updateFormData } from "../redux/interviewformSlice";
+import Footer from "../components/Footer";
 import '../styles/Interview.css';
 import arrow from "../assets/arrow.png";
 
@@ -274,6 +275,7 @@ const InterviewForm = () => {
           </form>
         </div>
       </section>
+      <Footer/>
     </div>
   );
 };

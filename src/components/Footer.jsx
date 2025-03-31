@@ -1,47 +1,107 @@
 import React from "react";
-import { FaFacebookF, FaTwitter, FaLinkedinIn, FaGithub } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux"; // Redux se theme lene ke liye import karo
+import { 
+  FaFacebook, FaTwitter, FaLinkedin, FaInstagram, 
+  FaEnvelope, FaPhoneAlt, FaArrowRight 
+} from "react-icons/fa";
+import "../styles/App.css";
 
-export default function Footer() {
+const Footer = () => {
+  // ✅ Correct Redux state path ensure karo
+  const isDarkMode = useSelector((state) => state.theme.darkMode); 
+
+  const socialLinks = [
+    { icon: <FaFacebook />, name: "Facebook", url: "#" },
+    { icon: <FaTwitter />, name: "Twitter", url: "#" },
+    { icon: <FaLinkedin />, name: "LinkedIn", url: "#" },
+    { icon: <FaInstagram />, name: "Instagram", url: "#" },
+  ];
+
+  const quickLinks = [
+    { name: "Home", path: "/" },
+    { name: "Interview", path: "/interview" },
+    { name: "Resume Check", path: "/resume-validator" },
+    { name: "Build Resume", path: "https://jobscraft.vercel.app/", external: true },
+  ];
+
   return (
-    <footer className="footer">
-      <div className="footer-content">
-        <div className="footer-logo">
-          <h2 className="footer-title">AI Mock Interview</h2>
-          <p>Prepare, Practice, and Perfect Your Interviews with AI-driven insights.</p>
+    <footer className={`footer ${isDarkMode ? "dark" : "light"}`}>
+      <div className="footer-container">
+        {/* Brand Column */}
+        <div className="footer-column brand-column">
+          <h3 className="logo">JOBSCRAFT</h3>
+          <p className="tagline">AI-powered career acceleration</p>
+          
+          <div className="contact-info">
+            <div className="contact-row">
+              <div className="contact-item">
+                <FaEnvelope className="icon" />
+                <span>contact@jobscraft.com</span>
+              </div>
+              <div className="contact-item">
+                <FaPhoneAlt className="icon" />
+                <span>+91 8787878787</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="footer-links">
+        {/* Quick Links Column */}
+        <div className="footer-column links-column">
           <h4>Quick Links</h4>
-          <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#features">Features</a></li>
-            <li><a href="#testimonials">Testimonials</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
+          <div className="footer-links-grid">
+            {quickLinks.map((link, index) => (
+              <div key={index} className="link-item">
+                {link.external ? (
+                  <a href={link.path} target="_blank" rel="noopener noreferrer">
+                    <FaArrowRight className="link-icon" />
+                    {link.name}
+                  </a>
+                ) : (
+                  <Link to={link.path}>
+                    <FaArrowRight className="link-icon" />
+                    {link.name}
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="footer-social">
-          <h4>Follow Us</h4>
-          <div className="social-icons">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-              <FaFacebookF />
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-              <FaTwitter />
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-              <FaLinkedinIn />
-            </a>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer">
-              <FaGithub />
-            </a>
+        {/* Social Media Column */}
+        <div className="footer-column social-column">
+          <h4>Connect With Us</h4>
+          <div className="social-links">
+            {socialLinks.map((social, index) => (
+              <a 
+                key={index}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.name}
+              >
+                {social.icon}
+              </a>
+            ))}
           </div>
         </div>
       </div>
 
+      {/* Newsletter */}
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} AI Mock Interview. All Rights Reserved.</p>
+        <div className="newsletter">
+          <p>Subscribe for updates</p>
+          <div className="newsletter-input">
+            <input type="email" placeholder="Your email" />
+            <button aria-label="Subscribe">
+              <FaArrowRight />
+            </button>
+          </div>
+        </div>
       </div>
     </footer>
   );
-}
+};
+
+export default Footer;

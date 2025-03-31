@@ -30,7 +30,7 @@ function NavBar() {
       <div className="nav-container">
         <div className="nav-links">
           <Link to="/resume-validator" className="nav-link">
-            <FileText className="nav-icon" /> Validate Resume
+            <FileText className="nav-icon" /> Check Resume
           </Link>
           <a
             href="https://jobscraft.vercel.app/"

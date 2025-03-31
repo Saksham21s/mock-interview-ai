@@ -5,6 +5,7 @@ import feedback from "../assets/feedback.webp";
 import customised from "../assets/for-you.webp";
 import analysis from "../assets/analysis.webp";
 import React, { memo } from "react";
+import Footer from "../components/Footer";
 
 const FEATURES = [
   {
@@ -95,6 +96,8 @@ export default function HomePage() {
 
       {/* Testimonials Section */}
       <Testimonial />
+
+      <Footer />
     </div>
   );
 }
