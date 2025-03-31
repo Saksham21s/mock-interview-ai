@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Interview from "./pages/Interviewform";
 import ResumeValidation from "./pages/ResumeValidation";
-import InterviewSession from "./pages/InterviewSession";
+import InterviewSession from "./pages/interviewSession";
 import Reports from "./pages/Reports";
 import PageNotFound from "./components/PageNotFound";
 import MoveToTopButton from "./components/MoveToTopButton"; 
