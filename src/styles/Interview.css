@@ -2803,6 +2803,7 @@ code-snippet .function {
   .question-card {
     padding: 0.8rem;
     border-left-width: 2px;
+    max-width: 90%;
   }
   .question-header {
     gap: 0.4rem;

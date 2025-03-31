@@ -3001,7 +3001,7 @@ $transition: all 0.3s ease;
   box-shadow: $box-shadow;
   transition: $transition;
   border-left: 4px solid $primary-color;
-  max-width: 100%; // Ensure it doesn’t overflow
+  max-width: 100%;
 
   &.excellent { border-left-color: $success-color; }
   &.very-good { border-left-color: mix($success-color, $warning-color, 70%); }
@@ -3177,6 +3177,7 @@ $transition: all 0.3s ease;
   .question-card {
     padding: 0.8rem;
     border-left-width: 2px;
+    max-width: 90%;
   }
 
   .question-header {
