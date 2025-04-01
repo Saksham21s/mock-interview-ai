@@ -17,14 +17,17 @@ const CameraMonitor = ({ onCheatingDetected, isInterviewActive }) => {
 
   // Load AI model
   useEffect(() => {
+    let isMounted = true;
+    
     const loadModel = async () => {
       try {
+        await tf.setBackend('webgl');
         await tf.ready();
         const faceModel = await facemesh.load({
           maxFaces: 2,
           detectionConfidence: 0.8
         });
-        setModel(faceModel);
+        if (isMounted) setModel(faceModel);
       } catch (err) {
         console.error("Model loading failed:", err);
         toast.error("Face detection failed to initialize");
@@ -34,6 +37,7 @@ const CameraMonitor = ({ onCheatingDetected, isInterviewActive }) => {
     loadModel();
 
     return () => {
+      isMounted = false;
       if (detectionInterval.current) clearInterval(detectionInterval.current);
     };
   }, []);
@@ -59,7 +63,6 @@ const CameraMonitor = ({ onCheatingDetected, isInterviewActive }) => {
       streamRef.current = stream;
       videoRef.current.srcObject = stream;
       
-      // Start detection when video is ready
       videoRef.current.onloadedmetadata = () => {
         startFaceDetection();
       };
@@ -72,19 +75,16 @@ const CameraMonitor = ({ onCheatingDetected, isInterviewActive }) => {
   };
 
   const stopCamera = () => {
-    // Clear detection
     if (detectionInterval.current) {
       clearInterval(detectionInterval.current);
       detectionInterval.current = null;
     }
     
-    // Stop camera stream
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
     
-    // Reset state
     setFaceAlert(null);
     noFaceCount.current = 0;
     multiFaceCount.current = 0;
@@ -97,26 +97,22 @@ const CameraMonitor = ({ onCheatingDetected, isInterviewActive }) => {
       try {
         const predictions = await model.estimateFaces(videoRef.current);
         
-        // No face detected
         if (predictions.length === 0) {
           handleNoFace();
           return;
         }
         
-        // Multiple faces detected
         if (predictions.length > 1) {
           handleMultipleFaces();
           return;
         }
 
-        // Single face - check clarity
         const face = predictions[0];
         if (!isFaceClear(face)) {
           handleUnclearFace();
           return;
         }
 
-        // Face is good - reset warnings
         setFaceAlert(null);
         noFaceCount.current = 0;
         multiFaceCount.current = 0;
@@ -124,10 +120,9 @@ const CameraMonitor = ({ onCheatingDetected, isInterviewActive }) => {
       } catch (err) {
         console.error("Detection error:", err);
       }
-    }, 1000); // Check every second
+    }, 1000);
   };
 
-  // Face detection helpers
   const isFaceClear = (face) => {
     const box = face.boundingBox;
     const width = box.bottomRight[0] - box.topLeft[0];
@@ -137,43 +132,37 @@ const CameraMonitor = ({ onCheatingDetected, isInterviewActive }) => {
 
   const handleNoFace = () => {
     noFaceCount.current++;
-    
-    if (noFaceCount.current > 3) { // 3 seconds
+    if (noFaceCount.current > 3) {
       triggerWarning("NO_FACE", "Please position your face in camera view");
     }
   };
 
   const handleMultipleFaces = () => {
     multiFaceCount.current++;
-    
-    if (multiFaceCount.current > 2) { // 2 seconds
+    if (multiFaceCount.current > 2) {
       triggerWarning("MULTIPLE_FACES", "Only one person should be visible");
     }
   };
 
   const handleUnclearFace = () => {
     noFaceCount.current++;
-    
-    if (noFaceCount.current > 3) { // 3 seconds
+    if (noFaceCount.current > 3) {
       triggerWarning("FACE_UNCLR", "Please position your face clearly");
     }
   };
 
   const triggerWarning = (type, message) => {
-    // Prevent warning spam
     if (faceAlert === type) return;
     
     setFaceAlert(type);
     toast.warning(message, { autoClose: 3000 });
     onCheatingDetected(type);
     
-    // Track recent warnings
     const now = Date.now();
     recentWarnings.current = recentWarnings.current
-      .filter(t => now - t < 10000) // 10 second window
+      .filter(t => now - t < 10000)
       .concat(now);
     
-    // Auto-end if too many warnings
     if (recentWarnings.current.length > 3) {
       onCheatingDetected("EXCESSIVE_WARNINGS");
     }
