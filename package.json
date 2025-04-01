@@ -12,10 +12,11 @@
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "@reduxjs/toolkit": "^2.6.1",
-    "@tensorflow-models/facemesh": "^0.0.4",
-    "@tensorflow/tfjs": "^2.8.6",
-    "@tensorflow/tfjs-converter": "^1.7.4",
-    "@tensorflow/tfjs-core": "^2.8.6",
+    "@tensorflow-models/facemesh": "^1.0.1",
+    "@tensorflow/tfjs": "^3.18.0",
+    "@tensorflow/tfjs-backend-webgl": "^3.18.0",
+    "@tensorflow/tfjs-converter": "^3.18.0",
+    "@tensorflow/tfjs-core": "^3.18.0"
     "axios": "^1.8.4",
     "chart.js": "^4.4.8",
     "framer-motion": "^12.6.2",
