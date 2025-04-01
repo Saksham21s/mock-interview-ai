@@ -905,6 +905,7 @@ html.dark .response-input {
   display: inline-block;
   vertical-align: middle;
   position: relative;
+  margin-right: 5px;
 }
 .mcq-option .mcq-option-input:checked::after {
   content: "";
@@ -1035,6 +1036,57 @@ html.dark .response-input {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
   transition: transform 300ms ease-in-out;
+}
+
+.camera-monitor {
+  position: relative;
+  display: inline-block;
+  border: 2px solid #eee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.face-alert {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 6px;
+  text-align: center;
+  font-size: 12px;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+.face-alert.no_face,
+.face-alert.face_unclr {
+  background: rgba(255, 59, 48, 0.8);
+}
+
+.face-alert.multiple_faces {
+  background: rgba(255, 149, 0, 0.8);
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
+.camera-off-placeholder {
+  width: 160px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  color: #666;
+  font-size: 12px;
 }
 
 .timer-sidebar {
@@ -3053,45 +3105,4 @@ code-snippet .function {
   .improvement-cards {
     grid-template-columns: 1fr !important;
   }
-}
-/* Add to Interview.css */
-.camera-monitor {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-  border: 2px solid #ff4d4d;
-  border-radius: 8px;
-  background: black;
-  width: 160px;
-  height: 120px;
-}
-
-.camera-monitor video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.camera-off-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 12px;
-  background: #222;
-}
-
-.cheating-alerts {
-  position: fixed;
-  bottom: 150px;
-  right: 20px;
-  background: rgba(255, 77, 77, 0.9);
-  color: white;
-  padding: 10px;
-  border-radius: 8px;
-  max-width: 200px;
-  font-size: 14px;
 }/*# sourceMappingURL=Interview.css.map */

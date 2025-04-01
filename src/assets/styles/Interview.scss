@@ -1051,6 +1051,7 @@ $error-color: #ef233c;
     display: inline-block;
     vertical-align: middle;
     position: relative;
+    margin-right: 5px;
 
     &:checked {
       &::after {
@@ -1135,7 +1136,7 @@ $error-color: #ef233c;
   gap: 0.5rem;
 
   &:hover {
-    background: color.adjust($primary-color, 10%);
+    background: darken($primary-color, 10%);
     transform: translateY(-2px);
   }
 
@@ -1714,7 +1715,7 @@ $error-color: #ef233c;
     cursor: pointer;
 
     &:hover {
-      background: color.adjust(#28a745, 10%);
+      background: darken(#28a745, 10%);
     }
   }
 }
@@ -2109,7 +2110,7 @@ code-snippet .function {
   gap: 0.5rem;
 
   &:hover {
-    background: color.adjust($primary-color, 10%);
+    background: darken($primary-color, 10%);
     transform: translateY(-2px);
   }
 
@@ -2606,7 +2607,7 @@ code-snippet .function {
     cursor: pointer;
 
     &:hover {
-      background: color.adjust(#28a745, 10%);
+      background: darken(#28a745, 10%);
     }
   }
 }
@@ -2961,7 +2962,7 @@ $transition: all 0.3s ease;
       color: white;
 
       &:hover {
-        background: color.adjust($primary-color, 5%);
+        background: darken($primary-color, 5%);
       }
     }
 
@@ -3092,11 +3093,11 @@ $transition: all 0.3s ease;
       font-size: 0.9rem;
       font-weight: 700;
 
-      &.excellent { background: rgba($success-color, 0.1); color: color.adjust($success-color, 20%); }
-      &.very-good { background: rgba(mix($success-color, $warning-color, 70%), 0.1); color: color.adjust(mix($success-color, $warning-color, 70%), 20%); }
-      &.good { background: rgba($warning-color, 0.1); color: color.adjust($warning-color, 20%); }
-      &.fair { background: rgba(mix($warning-color, $danger-color, 50%), 0.1); color: color.adjust(mix($warning-color, $danger-color, 50%), 20%); }
-      &.poor { background: rgba($danger-color, 0.1); color: color.adjust($danger-color, 20%); }
+      &.excellent { background: rgba($success-color, 0.1); color: darken($success-color, 20%); }
+      &.very-good { background: rgba(mix($success-color, $warning-color, 70%), 0.1); color: darken(mix($success-color, $warning-color, 70%), 20%); }
+      &.good { background: rgba($warning-color, 0.1); color: darken($warning-color, 20%); }
+      &.fair { background: rgba(mix($warning-color, $danger-color, 50%), 0.1); color: darken(mix($warning-color, $danger-color, 50%), 20%); }
+      &.poor { background: rgba($danger-color, 0.1); color: darken($danger-color, 20%); }
     }
   }
 
@@ -3436,7 +3437,7 @@ $transition: all 0.3s ease;
     transition: $transition;
 
     &:hover {
-      background: color.adjust($primary-color, 5%);
+      background: darken($primary-color, 5%);
       transform: translateY(-2px);
     }
   }
