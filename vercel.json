@@ -12,11 +12,15 @@
   ],
   "routes": [
     {
-      "src": "/assets/(.*\\.(svg|png|jpg|jpeg|webp|gif))",
+      "src": "/assets/(.*\\.svg)",
+      "headers": { "Content-Type": "image/svg+xml" }
+    },
+    {
+      "src": "/assets/(.*\\.(png|jpg|jpeg|webp|gif))",
       "headers": { "Content-Type": "image/*" }
     },
     {
-      "src": "/assets/css/(.*\\.css)",
+      "src": "/assets/(.*\\.css)",
       "headers": { "Content-Type": "text/css" }
     },
     {
