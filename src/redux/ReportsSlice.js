@@ -187,41 +187,38 @@ export const analyzeFeedback = createAsyncThunk(
   'feedback/analyze',
   async (_, { rejectWithValue, getState }) => {
     try {
-      // Try sessionStorage first
-      let sessionData;
-      try {
-        sessionData = JSON.parse(sessionStorage.getItem("interviewResult"));
-      } catch (e) {
-        console.error("Error parsing sessionStorage data:", e);
-        sessionData = null;
+      // Try to get data from multiple sources
+      const state = getState();
+      let interviewData;
+
+      // 1. Check location state (passed from navigation)
+      if (window.location.state?.interviewData) {
+        interviewData = window.location.state.interviewData;
       }
-      
-      // Fallback to Redux store
-      if (!sessionData) {
-        const state = getState();
-        if (state.interview?.responses?.length > 0) {
-          sessionData = {
-            jobRole: state.interview.currentJobRole || 'Unknown Role',
-            responses: state.interview.responses.map(res => ({
-              ...res,
-              category: res.category || 'General'
-            })),
-            timeTaken: formatTime(30 * 60 - (state.interview.timer || 0)),
-            date: new Date().toISOString()
-          };
-          sessionStorage.setItem("interviewResult", JSON.stringify(sessionData));
-        } else {
-          throw new Error('No interview data found');
-        }
+      // 2. Check sessionStorage
+      else if (sessionStorage.getItem('interviewResults')) {
+        interviewData = JSON.parse(sessionStorage.getItem('interviewResults'));
+      }
+      // 3. Fallback to Redux store
+      else if (state.interview?.responses?.length > 0) {
+        interviewData = {
+          responses: state.interview.responses,
+          jobRole: state.interview.currentJobRole,
+          timeTaken: formatTime(30 * 60 - state.interview.timer),
+          cheatingWarnings: []
+        };
+      }
+      else {
+        throw new Error('No interview data found');
       }
 
       // Validate data
-      if (!sessionData.responses || !Array.isArray(sessionData.responses)) {
+      if (!interviewData?.responses || !Array.isArray(interviewData.responses)) {
         throw new Error('Invalid interview data format');
       }
 
       // Process with local analysis
-      return analyzeExistingData(sessionData);
+      return analyzeExistingData(interviewData);
 
     } catch (error) {
       console.error("Error in analyzeFeedback:", error);

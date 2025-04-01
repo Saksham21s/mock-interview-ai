@@ -439,42 +439,26 @@ const InterviewPage = () => {
     setIsRunning(false);
     setInterviewCompleted(true);
     clearTimeout(timerRef.current);
-
+  
     const interviewResults = {
       score: getPerformanceFeedback(),
-      responses,
+      responses: [...responses], // IMPORTANT: Create new array
       timeTaken: formatTime(30 * 60 - timer),
       jobRole: currentJobRole,
       date: new Date().toISOString(),
-      questionCounts: {
-        technical: currentQuestions.filter((q) => q.round === "Technical")
-          .length,
-        coding: currentQuestions.filter((q) => q.round === "Coding").length,
-        behavioral: currentQuestions.filter((q) => q.round === "Behavioral")
-          .length,
-      },
-      cheatingWarnings,
+      cheatingWarnings: [...cheatingWarnings]
     };
-
-    // Save both interview results and current state
-    sessionStorage.setItem(
-      "interviewResults",
-      JSON.stringify(interviewResults)
-    );
-    sessionStorage.setItem("responses", JSON.stringify(responses));
-    sessionStorage.setItem(
-      "interviewState",
-      JSON.stringify({
-        responses,
-        timer,
-        currentRound,
-        currentQuestionIndex,
-        userResponse,
-        output,
-        selectedLanguage,
-        currentJobRole,
-      })
-    );
+  
+    // TRIPLE SAVE MECHANISM
+    // 1. Save to sessionStorage (immediate)
+    sessionStorage.setItem('interviewResults', JSON.stringify(interviewResults));
+    sessionStorage.setItem('responses', JSON.stringify(responses));
+    
+    // 2. Save to localStorage (as backup)
+    localStorage.setItem('lastInterviewResults', JSON.stringify(interviewResults));
+    
+    // 3. Return fresh copy
+    return interviewResults;
   };
 
   const currentQuestion = currentQuestions[currentQuestionIndex] || {};
@@ -543,7 +527,7 @@ const InterviewPage = () => {
                       width: `${Math.min(
                         100,
                         responses.filter((r) => r.round === "Coding").length *
-                          50
+                        50
                       )}%`,
                     }}
                   ></div>
@@ -572,8 +556,12 @@ const InterviewPage = () => {
               <button
                 className="primary-button"
                 onClick={() => {
-                  endInterview();
-                  setTimeout(() => navigate("/report", { replace: true }), 100);
+                  const results = endInterview();
+                  window.sessionStorage.setItem('FORCE_SAVE', Date.now());
+                  navigate('/report', {
+                    state: { interviewData: results },
+                    replace: true
+                  });
                 }}
               >
                 View Detailed Report <FaArrowRight />
@@ -640,9 +628,8 @@ const InterviewPage = () => {
             return (
               <div
                 key={round}
-                className={`rounds-nav__item ${isActive ? "active" : ""} ${
-                  !isNext ? "disabled" : ""
-                }`}
+                className={`rounds-nav__item ${isActive ? "active" : ""} ${!isNext ? "disabled" : ""
+                  }`}
                 onClick={() => isNext && handleRoundClick(round)}
               >
                 <div className="rounds-nav__icon">
@@ -738,7 +725,7 @@ const InterviewPage = () => {
                 disabled={!userResponse.trim() && currentRound !== "Coding"}
               >
                 {currentQuestionIndex === currentQuestions.length - 1 &&
-                currentRound === "Behavioral"
+                  currentRound === "Behavioral"
                   ? "Finish Interview"
                   : "Submit Answer"}
                 <FaCheck />
@@ -783,12 +770,11 @@ const InterviewPage = () => {
                 {rounds.map((round, index) => (
                   <div
                     key={round}
-                    className={`progress-step ${
-                      currentRound === round ||
+                    className={`progress-step ${currentRound === round ||
                       index < rounds.indexOf(currentRound)
-                        ? "active"
-                        : ""
-                    }`}
+                      ? "active"
+                      : ""
+                      }`}
                   >
                     <div className="step-number">{index + 1}</div>
                     <span>{round}</span>
@@ -804,10 +790,9 @@ const InterviewPage = () => {
                   <div
                     className="progress-fill"
                     style={{
-                      width: `${
-                        ((currentQuestionIndex + 1) / currentQuestions.length) *
+                      width: `${((currentQuestionIndex + 1) / currentQuestions.length) *
                         100
-                      }%`,
+                        }%`,
                     }}
                   ></div>
                 </div>

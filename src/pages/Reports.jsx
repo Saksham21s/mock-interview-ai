@@ -20,41 +20,67 @@ const InterviewFeedback = () => {
 
 
   useEffect(() => {
-    // Simulate AI analysis progress
-    const timer = setInterval(() => {
-      setAnalysisProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(timer);
-          return 100;
+    const loadData = () => {
+      try {
+        // 1. First check navigation state
+        if (location.state?.interviewData) {
+          console.log('Using location state data');
+          setReportData(processReportData(location.state.interviewData));
+          setLoading(false);
+          return;
         }
-        return prev + 10;
-      });
-    }, 300);
-
-    try {
-      const sessionData = JSON.parse(
-        sessionStorage.getItem('interviewResults') ||
-        sessionStorage.getItem('interviewResult')
-      );
-
-      if (!sessionData) {
+  
+        // 2. Check sessionStorage (main source)
+        const sessionData = JSON.parse(
+          sessionStorage.getItem('interviewResults') || 
+          sessionStorage.getItem('interviewResult') || 
+          'null'
+        );
+  
+        if (sessionData) {
+          console.log('Using sessionStorage data');
+          setReportData(processReportData(sessionData));
+          setLoading(false);
+          return;
+        }
+  
+        // 3. Check localStorage (backup)
+        const localData = JSON.parse(
+          localStorage.getItem('lastInterviewResults') || 'null'
+        );
+  
+        if (localData) {
+          console.log('Using localStorage backup data');
+          setReportData(processReportData(localData));
+          setLoading(false);
+          return;
+        }
+  
+        // 4. Final fallback to Redux
+        const reduxState = store.getState();
+        if (reduxState.interview?.responses?.length > 0) {
+          console.log('Using Redux store data');
+          const reduxData = {
+            responses: [...reduxState.interview.responses],
+            jobRole: reduxState.interview.currentJobRole,
+            timeTaken: formatTime(30 * 60 - reduxState.interview.timer),
+            cheatingWarnings: []
+          };
+          setReportData(processReportData(reduxData));
+          setLoading(false);
+          return;
+        }
+  
         throw new Error('No interview data found');
-      }
-
-      setTimeout(() => {
-        const processedData = processReportData(sessionData);
-        setReportData(processedData);
+      } catch (err) {
+        console.error('Data loading error:', err);
+        setError(err.message);
         setLoading(false);
-      }, 3500);
-
-    } catch (err) {
-      console.error('Error loading report:', err);
-      setError(err.message);
-      setLoading(false);
-    }
-
-    return () => clearInterval(timer);
-  }, [navigate]);
+      }
+    };
+  
+    loadData();
+  }, [location.state]);
 
   if (loading) return <LoadingScreen progress={analysisProgress} />;
   if (error) return <ErrorMessage error={error} />;
@@ -76,7 +102,7 @@ const InterviewFeedback = () => {
         </button>
         <button
           className="new-interview-btn"
-          onClick={() => { navigate('/interview'); sessionStorage.clear(); }}
+          onClick={() => { navigate('/interview'); sessionStorage.clear(); localStorage.clear(); }}
         >
           🚀 Start New Interview
         </button>
