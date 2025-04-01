@@ -76,7 +76,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="hero-image">
-            <img src={hero} alt="AI Interview Mock Illustration" className="hero-svg" />
+            <img src={hero} alt=" Mock AI Interview Illustration" className="hero-svg" />
           </div>
         </div>
       </section>
