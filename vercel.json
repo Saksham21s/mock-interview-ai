@@ -7,14 +7,20 @@
       "config": {
         "installCommand": "npm install --legacy-peer-deps --force",
         "outputDirectory": "dist",
-        "nodeVersion": "22.x"
+        "nodeVersion": "18.x"
       }
     }
   ],
   "routes": [
     {
-      "src": "/assets/(.*\\.css)",
-      "headers": { "Content-Type": "text/css" }
+      "src": "/assets/(.*\\.css)", 
+      "dest": "/assets/$1",
+      "headers": { "Content-Type": "text/css" } 
+    },
+    {
+      "src": "/assets/(.*\\.js)", 
+      "dest": "/assets/$1",
+      "headers": { "Content-Type": "application/javascript" } 
     },
     {
       "src": "/(.*)", 
