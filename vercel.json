@@ -6,7 +6,7 @@
       "use": "@vercel/static-build",
       "config": {
         "installCommand": "npm install --legacy-peer-deps --force",
-        "nodeVersion": "18.x"
+        "nodeVersion": "22.x"
       }
     }
   ],
