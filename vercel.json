@@ -6,12 +6,24 @@
       "use": "@vercel/static-build",
       "config": {
         "installCommand": "npm install --legacy-peer-deps --force",
-        "nodeVersion": "22.x"
+        "outputDirectory": "dist",
+        "nodeVersion": "18.x"
       }
     }
   ],
   "routes": [
-    { "src": "/api/.*", "dest": "/api", "continue": true },
-    { "src": "/(.*)", "dest": "/", "status": 200 }
+    {
+      "src": "/assets/(.*)",
+      "headers": {
+        "Content-Type": "text/javascript"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html",
+      "headers": {
+        "Content-Type": "text/html"
+      }
+    }
   ]
 }
