@@ -20,7 +20,12 @@
     {
       "src": "/assets/(.*\\.js)", 
       "dest": "/assets/$1",
-      "headers": { "Content-Type": "application/javascript" } 
+      "headers": { "Content-Type": "application/javascript" }
+    },
+    {
+      "src": "/assets/(.*\\.(png|jpg|jpeg|gif|svg|webp))", 
+      "dest": "/assets/$1",
+      "headers": { "Content-Type": "image/*" }
     },
     {
       "src": "/(.*)", 
