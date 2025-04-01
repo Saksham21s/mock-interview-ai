@@ -12,16 +12,20 @@
   ],
   "routes": [
     {
-      "src": "/assets/(.*\\.svg)",
+      "src": "/assets/css/(.*\\.css)",
+      "headers": { "Content-Type": "text/css" }
+    },
+    {
+      "src": "/assets/images/(.*\\.svg)",
       "headers": { "Content-Type": "image/svg+xml" }
     },
     {
-      "src": "/assets/(.*\\.(png|jpg|jpeg|webp|gif))",
+      "src": "/assets/images/(.*\\.(png|jpg|jpeg|webp|gif))",
       "headers": { "Content-Type": "image/*" }
     },
     {
-      "src": "/assets/(.*\\.css)",
-      "headers": { "Content-Type": "text/css" }
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
     },
     {
       "src": "/(.*)",
