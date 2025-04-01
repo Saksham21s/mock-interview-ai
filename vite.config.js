@@ -8,25 +8,23 @@ export default defineConfig({
     rollupOptions: {
       output: {
         assetFileNames: (assetInfo) => {
-          // Handle .css files separately
           if (assetInfo.name.endsWith('.css')) {
             return 'assets/css/[name].[hash].[ext]';
           }
-
-          // Ensure all assets like SVG, PNG, JPG, WebP are handled in the assets folder
-          if (assetInfo.name.match(/\.(svg|jpg|jpeg|png|webp)$/)) {
-            return 'assets/[name].[hash].[ext]';
+          if (/\.(svg|jpg|jpeg|png|webp)$/.test(assetInfo.name)) {
+            return 'assets/images/[name].[hash].[ext]';
           }
-
-          // Default for other assets
           return 'assets/[name].[ext]';
-        },
-      },
-    },
+        }
+      }
+    }
+  },
+  server: {
+    assetsInclude: ['**/*.svg', '**/*.webp']
   },
   css: {
     modules: {
       localsConvention: 'camelCase',
-    },
-  },
+    }
+  }
 });
