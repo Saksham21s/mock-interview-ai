@@ -1199,6 +1199,53 @@ $error-color: #ef233c;
   }
 }
 
+// Camera Monitoring 
+.camera-monitor {
+  position: relative;
+  display: inline-block;
+  border: 2px solid #eee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.face-alert {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 6px;
+  text-align: center;
+  font-size: 12px;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+.face-alert.no_face,
+.face-alert.face_unclr {
+  background: rgba(255, 59, 48, 0.8); 
+}
+
+.face-alert.multiple_faces {
+  background: rgba(255, 149, 0, 0.8); 
+}
+
+@keyframes pulse {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+.camera-off-placeholder {
+  width: 160px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  color: #666;
+  font-size: 12px;
+}
+
 // Timer Sidebar
 .timer-sidebar {
   flex: 1;
@@ -3462,3 +3509,4 @@ $transition: all 0.3s ease;
     grid-template-columns: 1fr !important;
   }
 }
+

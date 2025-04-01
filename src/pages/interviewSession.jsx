@@ -17,6 +17,8 @@ import Modal from '../components/ModelOverlay';
 import CodeEditor from './CodeEditor';
 import { questionBank } from './questions';
 import '../styles/Interview.css';
+import { toast } from 'react-toastify';
+import CameraMonitor from './CameraMonitor';
 
 const InterviewPage = () => {
   const navigate = useNavigate();
@@ -46,11 +48,56 @@ const InterviewPage = () => {
   const [editorCode, setEditorCode] = useState('');
   const [currentQuestions, setCurrentQuestions] = useState([]);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
+  const [isInterviewActive, setIsInterviewActive] = useState(false);
+  const [cheatingWarnings, setCheatingWarnings] = useState([]);
   const timerRef = useRef(null);
   const containerRef = useRef(null);
-  
+
   const rounds = ['Technical', 'Coding', 'Behavioral'];
   const [visitedRounds, setVisitedRounds] = useState(new Set(['Technical']));
+
+  // Start interview with camera permission check
+  const startInterview = async () => {
+    try {
+      // Check if camera is accessible
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach(track => track.stop());
+      
+      // If camera works, proceed
+      setIsInterviewActive(true);
+      toggleFullscreen();
+    } catch {
+      toast.error("You must enable camera to continue!");
+      return;
+    }
+  };
+
+  // Inside InterviewPage component
+useEffect(() => {
+  return () => {
+    // This runs when component unmounts (page change)
+    endInterview(); // Will trigger camera off
+  };
+}, []);
+
+  // Camera monitoring handler
+  const handleCheatingDetected = (type) => {
+    const warnings = {
+      NO_FACE: "No face detected! Please stay in frame.",
+      MULTIPLE_FACES: "Multiple faces detected!",
+      LOOKING_AWAY: "Looking away too often!",
+      CAMERA_BLOCKED: "Camera access denied. Interview may be terminated.",
+    };
+
+    setCheatingWarnings(prev => [...prev, warnings[type]]);
+
+    // Auto-end interview after 3 warnings
+    if (cheatingWarnings.length >= 2) { // Changed to 2 warnings for stricter monitoring
+      endInterview();
+      toast.error("Interview terminated due to suspicious activity.");
+    }
+  };
+  // Camera Monitoring using AI ends here //
 
   const handleRoundClick = (round) => {
     dispatch(setCurrentRound(round));
@@ -99,7 +146,7 @@ const InterviewPage = () => {
 
       const roundData = memoizedQuestionsData[currentJobRole][currentRound];
       let questions = [];
-      
+
       if (roundData) {
         if (currentRound === 'Technical') {
           questions = [...roundData].sort(() => Math.random() - 0.5).slice(0, 6);
@@ -189,25 +236,25 @@ const InterviewPage = () => {
     return () => document.removeEventListener("contextmenu", disableContextMenu);
   }, []);
 
-// Updated toggle function & disabling scroll when not full screen 
-const toggleFullscreen = () => {
-  if (!document.fullscreenElement) {
-    containerRef.current?.requestFullscreen?.()
-      .then(() => {
-        setIsRunning(true);
-        setShowWelcomeModal(false);
-        document.documentElement.style.overflowY = 'auto';
-        containerRef.current.style.overflowY = 'auto';
-      })
-      .catch(err => console.error('Fullscreen error:', err));
-  } else {
-    document.exitFullscreen()
-      .then(() => {
-        document.documentElement.style.overflowY = 'hidden';
-        containerRef.current.style.overflowY = 'hidden';
-      });
-  }
-};
+  // Updated toggle function & disabling scroll when not full screen 
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen?.()
+        .then(() => {
+          setIsRunning(true);
+          setShowWelcomeModal(false);
+          document.documentElement.style.overflowY = 'auto';
+          containerRef.current.style.overflowY = 'auto';
+        })
+        .catch(err => console.error('Fullscreen error:', err));
+    } else {
+      document.exitFullscreen()
+        .then(() => {
+          document.documentElement.style.overflowY = 'hidden';
+          containerRef.current.style.overflowY = 'hidden';
+        });
+    }
+  };
 
   const handleRunCode = () => {
     try {
@@ -326,9 +373,10 @@ const toggleFullscreen = () => {
   };
 
   const endInterview = () => {
-    setIsRunning(false);
-    setInterviewCompleted(true);
-    clearTimeout(timerRef.current);
+    setIsInterviewActive(false); 
+  setIsRunning(false);
+  setInterviewCompleted(true);
+  clearTimeout(timerRef.current);
 
     const interviewResults = {
       score: getPerformanceFeedback(),
@@ -340,7 +388,8 @@ const toggleFullscreen = () => {
         technical: currentQuestions.filter(q => q.round === 'Technical').length,
         coding: currentQuestions.filter(q => q.round === 'Coding').length,
         behavioral: currentQuestions.filter(q => q.round === 'Behavioral').length
-      }
+      },
+      cheatingWarnings
     };
 
     try {
@@ -577,6 +626,21 @@ const toggleFullscreen = () => {
               )}
             </div>
 
+            <div className="camera-monitor-container">
+            <CameraMonitor 
+              onCheatingDetected={handleCheatingDetected} 
+              isInterviewActive={isInterviewActive && !interviewCompleted}
+            />
+            {cheatingWarnings.length > 0 && (
+              <div className="cheating-alerts">
+                <h4>⚠️ Warnings:</h4>
+                {cheatingWarnings.map((msg, i) => (
+                  <p key={i}>{msg}</p>
+                ))}
+              </div>
+            )}
+          </div>
+
             <div className="interview-info">
               <h4>Interview For:</h4>
               <p className="job-role">{currentJobRole}</p>
@@ -635,34 +699,26 @@ const toggleFullscreen = () => {
 
       <Modal
         isOpen={showWelcomeModal}
-        onClose={() => {
-          setShowWelcomeModal(false);
-          navigate('/interview');
-          sessionStorage.clear();
-        }}
-        title="🚀 Ready for Your Interview?"
+        onClose={() => navigate('/')}
+        title="📸 Camera Required"
         message={
           <div className="welcome-message">
-            <p>For the best experience, we'll switch to fullscreen mode.</p>
-            <p>Tips for success:</p>
+            <p><strong>This interview requires camera monitoring.</strong></p>
             <ul>
-              <li>Find a quiet environment</li>
-              <li>Close distracting applications</li>
-              <li>Make sure you have enough time</li>
+              <li>✅ Camera must stay ON throughout</li>
+              <li>❌ No switching tabs/minimizing</li>
+              <li>⚠️ 3 warnings will end the interview</li>
             </ul>
           </div>
         }
         primaryAction={{
-          label: "Start Interview",
-          onClick: toggleFullscreen,
+          label: "I Accept - Start Interview",
+          onClick: startInterview,
           icon: <FaArrowRight />
         }}
         secondaryAction={{
           label: "Cancel",
-          onClick: () => {
-            navigate('/interview');
-            sessionStorage.clear();
-          },
+          onClick: () => navigate('/'),
           variant: "secondary"
         }}
       />
