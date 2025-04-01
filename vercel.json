@@ -6,34 +6,25 @@
       "use": "@vercel/static-build",
       "config": {
         "installCommand": "npm install --legacy-peer-deps --force",
-        "outputDirectory": "dist",
         "nodeVersion": "18.x"
       }
     }
   ],
   "routes": [
     {
-      "src": "/assets/(.*\\.css)", 
-      "dest": "/assets/$1",
-      "headers": { "Content-Type": "text/css" } 
+      "src": "/assets/css/(.*\\.css)",
+      "headers": { "Content-Type": "text/css" }
     },
     {
-      "src": "/assets/(.*\\.js)", 
-      "dest": "/assets/$1",
-      "headers": { "Content-Type": "application/javascript" }
-    },
-    {
-      "src": "/assets/(.*\\.(png|jpg|jpeg|gif|svg|webp))", 
-      "dest": "/assets/$1",
-      "headers": { "Content-Type": "image/*" }
-    },
-    {
-      "src": "/assets/(.*\\.svg)", 
-      "dest": "/assets/$1",
+      "src": "/assets/images/(.*\\.svg)",
       "headers": { "Content-Type": "image/svg+xml" }
     },
     {
-      "src": "/(.*)", 
+      "src": "/assets/images/(.*\\.(png|jpg|jpeg|webp|gif))",
+      "headers": { "Content-Type": "image/*" }
+    },
+    {
+      "src": "/(.*)",
       "dest": "/index.html"
     }
   ]
