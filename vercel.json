@@ -13,17 +13,12 @@
   ],
   "routes": [
     {
-      "src": "/assets/(.*)",
-      "headers": {
-        "Content-Type": "text/javascript"
-      }
+      "src": "/assets/(.*\\.css)",
+      "headers": { "Content-Type": "text/css" }
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html",
-      "headers": {
-        "Content-Type": "text/html"
-      }
+      "src": "/(.*)", 
+      "dest": "/index.html"
     }
   ]
 }
