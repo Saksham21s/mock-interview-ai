@@ -7,23 +7,21 @@ export default defineConfig({
     assetsDir: 'assets',
     rollupOptions: {
       output: {
-        // CSS files from src/styles
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name.endsWith('.css')) {
+          if (/\.(css)$/.test(assetInfo.name)) {
             return 'assets/css/[name].[hash][extname]';
           }
-          // Images from src/assets
           if (/\.(svg|png|jpg|jpeg|webp|gif)$/.test(assetInfo.name)) {
-            return 'assets/images/[name].[hash][extname]';
+            return 'assets/[name].[hash][extname]'; 
           }
           return 'assets/[name].[hash][extname]';
-        }
-      }
-    }
+        },
+      },
+    },
   },
   css: {
     modules: {
       localsConvention: 'camelCase',
-    }
-  }
+    },
+  },
 });
