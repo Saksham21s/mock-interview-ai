@@ -1,17 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@600;700&display=swap");
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Poppins", sans-serif;
-  background-color: #f5f7fa;
-  color: #2d3436;
-  line-height: 1.5;
-}
-
 .resume-validator-container {
   max-width: 900px;
   margin: 0 auto;
@@ -322,10 +309,11 @@ body {
   height: 160px;
   margin-bottom: 0.5rem;
   position: relative;
+  display: grid;
+  place-items: center;
 }
 .results-grid .chart-container .chart-center-text {
   position: absolute;
-  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 1.2rem;
@@ -349,11 +337,18 @@ body {
 }
 .suggestions-section .suggestions-list {
   list-style: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+@media (min-width: 768px) {
+  .suggestions-section .suggestions-list {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 .suggestions-section .suggestions-list li {
   display: flex;
   gap: 0.8rem;
-  margin-bottom: 0.8rem;
   align-items: flex-start;
 }
 .suggestions-section .suggestions-list li .suggestion-icon {

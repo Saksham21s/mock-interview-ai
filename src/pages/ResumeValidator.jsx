@@ -427,64 +427,59 @@ const ResumeValidator = () => {
   const getKeywordsForRole = (role) => {
     const roleKeywords = {
       'Software Developer': [
-        { keyword: 'Java', weight: 0.9, synonyms: ['J2EE', 'Spring'] },
-        { keyword: 'Python', weight: 0.8, synonyms: ['Django', 'Flask'] },
-        { keyword: 'Algorithms', weight: 0.9 },
-        { keyword: 'Data Structures', weight: 0.9, synonyms: ['DS'] },
-        { keyword: 'OOP', weight: 0.8, synonyms: ['Object Oriented'] },
-        { keyword: 'SQL', weight: 0.7, synonyms: ['MySQL', 'PostgreSQL'] }
+        { keyword: 'Java', weight: 0.9, synonyms: ['J2EE', 'Spring', 'Hibernate'] },
+        { keyword: 'Python', weight: 0.9, synonyms: ['Django', 'Flask', 'FastAPI'] },
+        { keyword: 'C++', weight: 0.9, synonyms: ['STL', 'Competitive Programming'] },
+        { keyword: 'Algorithms', weight: 0.9, synonyms: ['Problem Solving', 'Data Structures'] },
+        { keyword: 'OOP', weight: 0.8, synonyms: ['Object-Oriented Programming', 'Design Patterns'] },
+        { keyword: 'SQL', weight: 0.8, synonyms: ['MySQL', 'PostgreSQL', 'SQLite', 'MongoDB'] },
+        { keyword: 'Version Control', weight: 0.8, synonyms: ['Git', 'GitHub', 'GitLab', 'Bitbucket'] },
+        { keyword: 'Testing', weight: 0.7, synonyms: ['Unit Testing', 'Jest', 'Mocha', 'Selenium'] }
       ],
       'Frontend Developer': [
         { keyword: 'HTML', weight: 0.9, synonyms: ['HTML5'] },
-        { keyword: 'CSS', weight: 0.9, synonyms: ['SCSS', 'SASS'] },
-        { keyword: 'JavaScript', weight: 0.9, synonyms: ['ES6', 'TypeScript'] },
-        { keyword: 'React', weight: 0.9, synonyms: ['Next.js'] },
-        { keyword: 'Redux', weight: 0.8, synonyms: ['State Management'] },
-        { keyword: 'UI/UX', weight: 0.7, synonyms: ['Responsive Design'] }
+        { keyword: 'CSS', weight: 0.9, synonyms: ['SCSS', 'SASS', 'TailwindCSS', 'Bootstrap', 'Material UI'] },
+        { keyword: 'JavaScript', weight: 0.9, synonyms: ['ES6', 'TypeScript', 'Vanilla JS'] },
+        { keyword: 'React', weight: 0.9, synonyms: ['Next.js', 'Redux', 'Context API'] },
+        { keyword: 'UI/UX', weight: 0.8, synonyms: ['Responsive Design', 'Figma', 'Adobe XD'] },
+        { keyword: 'Web Performance', weight: 0.7, synonyms: ['Lighthouse', 'Core Web Vitals', 'Lazy Loading'] }
       ],
       'Backend Developer': [
-        { keyword: 'Node.js', weight: 0.9, synonyms: ['Express.js'] },
-        { keyword: 'Databases', weight: 0.8, synonyms: ['MongoDB', 'PostgreSQL'] },
-        { keyword: 'API Development', weight: 0.9, synonyms: ['REST', 'GraphQL'] },
-        { keyword: 'Authentication', weight: 0.8, synonyms: ['JWT', 'OAuth'] },
-        { keyword: 'Microservices', weight: 0.7, synonyms: ['Docker', 'Kubernetes'] }
+        { keyword: 'Node.js', weight: 0.9, synonyms: ['Express.js', 'NestJS', 'Koa.js'] },
+        { keyword: 'Databases', weight: 0.9, synonyms: ['MongoDB', 'PostgreSQL', 'MySQL', 'Redis', 'DynamoDB'] },
+        { keyword: 'API Development', weight: 0.9, synonyms: ['REST', 'GraphQL', 'gRPC', 'Swagger', 'Postman'] },
+        { keyword: 'Authentication', weight: 0.8, synonyms: ['JWT', 'OAuth', 'Firebase Auth', 'SSO'] },
+        { keyword: 'Microservices', weight: 0.8, synonyms: ['Docker', 'Kubernetes', 'RabbitMQ', 'Kafka'] },
+        { keyword: 'Cloud Services', weight: 0.7, synonyms: ['AWS', 'Azure', 'Google Cloud', 'Serverless'] }
       ],
       'Full Stack Developer': [
-        { keyword: 'JavaScript', weight: 0.9, synonyms: ['TypeScript'] },
-        { keyword: 'React', weight: 0.9, synonyms: ['Next.js'] },
-        { keyword: 'Node.js', weight: 0.9, synonyms: ['Express.js'] },
-        { keyword: 'Databases', weight: 0.8, synonyms: ['MongoDB', 'SQL'] },
-        { keyword: 'DevOps', weight: 0.7, synonyms: ['CI/CD', 'Docker'] }
+        { keyword: 'JavaScript', weight: 0.9, synonyms: ['TypeScript', 'ES6', 'Node.js'] },
+        { keyword: 'React', weight: 0.9, synonyms: ['Next.js', 'Vue.js', 'Angular'] },
+        { keyword: 'Node.js', weight: 0.9, synonyms: ['Express.js', 'NestJS', 'Koa.js'] },
+        { keyword: 'Databases', weight: 0.8, synonyms: ['MongoDB', 'SQL', 'Redis', 'Firebase'] },
+        { keyword: 'DevOps', weight: 0.7, synonyms: ['CI/CD', 'Docker', 'Kubernetes', 'Terraform', 'Jenkins'] },
+        { keyword: 'Version Control', weight: 0.8, synonyms: ['Git', 'GitHub', 'GitLab', 'Bitbucket'] }
       ],
       'Data Scientist': [
-        { keyword: 'Python', weight: 0.9, synonyms: ['Pandas', 'NumPy'] },
-        { keyword: 'Machine Learning', weight: 0.9, synonyms: ['Deep Learning', 'TensorFlow'] },
-        { keyword: 'Data Analysis', weight: 0.8, synonyms: ['EDA', 'Matplotlib'] },
-        { keyword: 'Big Data', weight: 0.7, synonyms: ['Hadoop', 'Spark'] }
+        { keyword: 'Python', weight: 0.9, synonyms: ['Pandas', 'NumPy', 'Scikit-learn', 'Matplotlib', 'Seaborn'] },
+        { keyword: 'Machine Learning', weight: 0.9, synonyms: ['Deep Learning', 'TensorFlow', 'PyTorch', 'Keras'] },
+        { keyword: 'Data Analysis', weight: 0.8, synonyms: ['EDA', 'Feature Engineering'] },
+        { keyword: 'Big Data', weight: 0.8, synonyms: ['Hadoop', 'Spark', 'Dask', 'Snowflake'] },
+        { keyword: 'SQL', weight: 0.7, synonyms: ['PostgreSQL', 'NoSQL', 'Google BigQuery'] },
+        { keyword: 'AI Models', weight: 0.8, synonyms: ['LSTM', 'CNN', 'NLP', 'Transformers'] }
       ],
       'DevOps Engineer': [
-        { keyword: 'CI/CD', weight: 0.9, synonyms: ['Jenkins', 'GitHub Actions'] },
-        { keyword: 'Docker', weight: 0.9, synonyms: ['Kubernetes'] },
-        { keyword: 'Cloud Computing', weight: 0.9, synonyms: ['AWS', 'Azure', 'GCP'] },
-        { keyword: 'Infrastructure as Code', weight: 0.8, synonyms: ['Terraform', 'Ansible'] }
-      ],
-      'UI/UX Designer': [
-        { keyword: 'User Research', weight: 0.9, synonyms: ['User Testing'] },
-        { keyword: 'Wireframing', weight: 0.8, synonyms: ['Prototyping'] },
-        { keyword: 'Figma', weight: 0.9, synonyms: ['Sketch', 'Adobe XD'] },
-        { keyword: 'Interaction Design', weight: 0.8, synonyms: ['Motion Design'] }
-      ],
-      'Product Manager': [
-        { keyword: 'Agile', weight: 0.9, synonyms: ['Scrum', 'Kanban'] },
-        { keyword: 'Product Strategy', weight: 0.9, synonyms: ['Roadmap', 'OKRs'] },
-        { keyword: 'User Research', weight: 0.8, synonyms: ['Market Analysis'] },
-        { keyword: 'Stakeholder Communication', weight: 0.7, synonyms: ['Presentation', 'Storytelling'] }
+        { keyword: 'CI/CD', weight: 0.9, synonyms: ['Jenkins', 'GitHub Actions', 'CircleCI', 'TravisCI'] },
+        { keyword: 'Docker', weight: 0.9, synonyms: ['Kubernetes', 'Containerization', 'Helm'] },
+        { keyword: 'Cloud Computing', weight: 0.9, synonyms: ['AWS', 'Azure', 'Google Cloud', 'Serverless', 'Terraform'] },
+        { keyword: 'Infrastructure as Code', weight: 0.8, synonyms: ['Terraform', 'Ansible', 'Pulumi', 'CloudFormation'] },
+        { keyword: 'Monitoring', weight: 0.8, synonyms: ['Prometheus', 'Grafana', 'Datadog', 'New Relic'] },
+        { keyword: 'Networking', weight: 0.7, synonyms: ['Load Balancing', 'Nginx', 'API Gateway', 'Cloudflare'] }
       ]
     };
-  
+    
     return roleKeywords[role] || [];
   };
-  
 
   const handleDrag = (e) => {
     e.preventDefault();

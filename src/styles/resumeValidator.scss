@@ -14,19 +14,6 @@ $border-radius: 8px;
 $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 $transition: all 0.2s ease;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #f5f7fa;
-  color: $dark;
-  line-height: 1.5;
-}
-
 .resume-validator-container {
   max-width: 900px;
   margin: 0 auto;
@@ -378,11 +365,12 @@ body {
       height: 160px;
       margin-bottom: 0.5rem;
       position: relative;
+      display: grid;
+        place-items: center;
     }
     
     .chart-center-text {
       position: absolute;
-      top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 1.2rem;
@@ -410,29 +398,35 @@ body {
   
   .suggestions-list {
     list-style: none;
-    
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 1rem;
+  
+    @media (min-width: 768px) {
+      grid-template-columns: 1fr 1fr; 
+    }
+  
     li {
       display: flex;
       gap: 0.8rem;
-      margin-bottom: 0.8rem;
       align-items: flex-start;
-      
+  
       .suggestion-icon {
         color: $primary;
         margin-top: 2px;
-        
+  
         svg {
           width: 14px;
           height: 14px;
         }
       }
-      
+  
       .suggestion-text {
         font-size: 0.9rem;
         flex: 1;
       }
     }
-  }
+  }  
 }
 
 .action-buttons {
