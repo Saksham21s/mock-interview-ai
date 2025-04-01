@@ -3,11 +3,11 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Interview from "./pages/Interviewform";
-import ResumeValidation from "./pages/ResumeValidation";
 import InterviewSession from "./pages/interviewSession";
 import Reports from "./pages/Reports";
 import PageNotFound from "./components/PageNotFound";
 import MoveToTopButton from "./components/MoveToTopButton"; 
+import ResumeValidator from "./pages/ResumeValidator";
 
 function App() {
   return (
@@ -29,9 +29,9 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/interview" element={<Interview />} />
-        <Route path="/resume-validation" element={<ResumeValidation />} />
         <Route path="/interview-session" element={<InterviewSession />} />
         <Route path="/report" element={<Reports />} />
+        <Route path="/resume-validator" element={<ResumeValidator />} />
         <Route path="*" element={<PageNotFound />} /> {/* 404 Route */}
       </Routes>
 
