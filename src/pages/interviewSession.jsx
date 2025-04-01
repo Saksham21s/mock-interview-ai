@@ -16,7 +16,7 @@ import {
 import Modal from '../components/ModelOverlay';
 import CodeEditor from './CodeEditor';
 import { questionBank } from './questions';
-import '../styles/Interview.css';
+import '../assets/styles/Interview.css';
 import { toast } from 'react-toastify';
 import CameraMonitor from './CameraMonitor';
 
@@ -72,11 +72,9 @@ const InterviewPage = () => {
     }
   };
 
-  // Inside InterviewPage component
 useEffect(() => {
   return () => {
-    // This runs when component unmounts (page change)
-    endInterview(); // Will trigger camera off
+    endInterview(); 
   };
 }, []);
 

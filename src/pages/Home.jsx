@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import Testimonial from "./Testimonial";
-import hero from "../assets/hero.svg";
-import feedback from "../assets/feedback.webp";
-import customised from "../assets/for-you.webp";
-import analysis from "../assets/analysis.webp";
+import hero from "../assets/images/hero.svg";
+import feedback from "../assets/images/feedback.webp";
+import customised from "../assets/images/for-you.webp";
+import analysis from "../assets/images/analysis.webp";
 import React, { memo } from "react";
 import Footer from "../components/Footer";
 

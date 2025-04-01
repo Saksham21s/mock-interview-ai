@@ -4,7 +4,7 @@ import { resetAnalysis } from '../redux/ValidatorSlice';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import { Link } from 'react-router-dom';
-import '../styles/resumeValidator.scss';
+import '../assets/styles/resumeValidator.scss';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 

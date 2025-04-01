@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaHome, FaMoon, FaSun, FaRocket } from "react-icons/fa";
-import "../styles/PageNotFound.css";
+import "../assets/styles/PageNotFound.css";
 
 const NotFound = () => {
   const [theme, setTheme] = useState("dark");

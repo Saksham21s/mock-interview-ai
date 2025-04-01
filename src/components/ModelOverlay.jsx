@@ -1,5 +1,5 @@
 import React from 'react';
-import "../styles/App.scss";
+import "../assets/styles/App.scss";
 
 const Modal = ({ isOpen, onClose, title, message, primaryAction, secondaryAction }) => {
   if (!isOpen) return null;
@@ -18,9 +18,8 @@ const Modal = ({ isOpen, onClose, title, message, primaryAction, secondaryAction
   
       <div className="modal-body">
         {typeof message === 'string' ? (
-          <p>{message}</p> // If `message` is a string, render it as a paragraph
+          <p>{message}</p> 
         ) : (
-          // Render the `message` if it's a JSX element (like the welcome message)
           <div className="welcome-message">
             <p>For the best experience, we'll switch to fullscreen mode.</p>
             <div>

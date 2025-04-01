@@ -1,13 +1,13 @@
-import interview from "../assets/interview.svg";
 import { FaFileUpload } from "react-icons/fa";
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { FaUserGraduate, FaBriefcase, FaArrowRight } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { updateFormData } from "../redux/interviewformSlice";
+import arrow from "../assets/images/arrow.png";
+import interview from "../assets/images/interview.svg";
 import Footer from "../components/Footer";
-import '../styles/Interview.css';
-import arrow from "../assets/arrow.png";
+import "../assets/styles/Interview.css";
 
 const jobData = {
   "Frontend Developer": ["JavaScript", "React", "HTML/CSS", "TypeScript", "Git", "Redux"],

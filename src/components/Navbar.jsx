@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "../styles/App.scss";
-import logo from "../assets/logo.webp";
+import "../assets/styles/App.min.css";
+import logo from "../assets/images/logo.webp";
 import { Sun, Moon, FileText, Tool } from "react-feather"; 
 
 if (localStorage.getItem("darkMode") === "true") {

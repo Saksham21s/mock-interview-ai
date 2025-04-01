@@ -20,7 +20,7 @@ function App() {
 function AppContent() {
   const location = useLocation();
   const showNavbar = location.pathname === "/" || location.pathname === "/interview";
-  const showMoveToTop = location.pathname !== "/interview-session"; // Hide button only on this page
+  const showMoveToTop = location.pathname !== "/interview-session";
 
   return (
     <div>

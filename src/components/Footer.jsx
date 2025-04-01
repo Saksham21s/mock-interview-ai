@@ -1,14 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux"; // Redux se theme lene ke liye import karo
+import { useSelector } from "react-redux";
 import { 
   FaFacebook, FaTwitter, FaLinkedin, FaInstagram, 
   FaEnvelope, FaPhoneAlt, FaArrowRight 
 } from "react-icons/fa";
-import "../styles/App.css";
+import "../assets/styles/App.css";
 
 const Footer = () => {
-  // ✅ Correct Redux state path ensure karo
   const isDarkMode = useSelector((state) => state.theme.darkMode); 
 
   const socialLinks = [

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { FaArrowUp } from "react-icons/fa";
-import "../styles/App.css"; 
+import "../assets//styles/App.css"; 
 
 const MoveToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
   const location = useLocation();
-  const isHidden = location.pathname === "/interview-session"; // Hide button on this route
+  const isHidden = location.pathname === "/interview-session"; 
 
   useEffect(() => {
     if (isHidden) return;
