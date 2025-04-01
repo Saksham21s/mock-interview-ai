@@ -24,6 +24,10 @@
       "headers": { "Content-Type": "image/*" }
     },
     {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
