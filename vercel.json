@@ -28,6 +28,11 @@
       "headers": { "Content-Type": "image/*" }
     },
     {
+      "src": "/assets/(.*\\.svg)", 
+      "dest": "/assets/$1",
+      "headers": { "Content-Type": "image/svg+xml" }
+    },
+    {
       "src": "/(.*)", 
       "dest": "/index.html"
     }
