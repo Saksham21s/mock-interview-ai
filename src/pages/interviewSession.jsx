@@ -10,8 +10,10 @@ import {
   FaCompress,
   FaChartLine,
   FaStar,
-  FaLightbulb,
   FaHome,
+  FaVideo,
+  FaExclamationTriangle,
+  FaCircle,
 } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -37,6 +39,26 @@ const InterviewPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { jobRole: urlJobRole } = useParams();
+
+  const handleViewReport = async () => {
+    if (reportNavigationLock) return;
+    setReportNavigationLock(true);
+
+    const results = {
+      responses: [...responses],
+      jobRole: currentJobRole,
+      timeTaken: formatTime(30 * 60 - timer),
+      score: getPerformanceFeedback(),
+      cheatingWarnings: [...cheatingWarnings]
+    };
+
+    localStorage.setItem('lastInterviewResults', JSON.stringify(results));
+
+    navigate('/report', {
+      state: { interviewData: results },
+      replace: true
+    });
+  };
 
   const {
     responses,
@@ -65,7 +87,7 @@ const InterviewPage = () => {
   const [cheatingWarnings, setCheatingWarnings] = useState([]);
   const timerRef = useRef(null);
   const containerRef = useRef(null);
-
+  const [reportNavigationLock, setReportNavigationLock] = useState(false);
   const rounds = ["Technical", "Coding", "Behavioral"];
   const [visitedRounds, setVisitedRounds] = useState(new Set(["Technical"]));
 
@@ -104,7 +126,6 @@ const InterviewPage = () => {
 
     // Auto-end interview after 3 warnings
     if (cheatingWarnings.length >= 2) {
-      // Changed to 2 warnings for stricter monitoring
       endInterview();
       toast.error("Interview terminated due to suspicious activity.");
     }
@@ -439,24 +460,24 @@ const InterviewPage = () => {
     setIsRunning(false);
     setInterviewCompleted(true);
     clearTimeout(timerRef.current);
-  
+
     const interviewResults = {
       score: getPerformanceFeedback(),
-      responses: [...responses], // IMPORTANT: Create new array
+      responses: [...responses],
       timeTaken: formatTime(30 * 60 - timer),
       jobRole: currentJobRole,
       date: new Date().toISOString(),
       cheatingWarnings: [...cheatingWarnings]
     };
-  
+
     // TRIPLE SAVE MECHANISM
     // 1. Save to sessionStorage (immediate)
     sessionStorage.setItem('interviewResults', JSON.stringify(interviewResults));
     sessionStorage.setItem('responses', JSON.stringify(responses));
-    
+
     // 2. Save to localStorage (as backup)
     localStorage.setItem('lastInterviewResults', JSON.stringify(interviewResults));
-    
+
     // 3. Return fresh copy
     return interviewResults;
   };
@@ -555,14 +576,8 @@ const InterviewPage = () => {
             <div className="action-buttons">
               <button
                 className="primary-button"
-                onClick={() => {
-                  const results = endInterview();
-                  window.sessionStorage.setItem('FORCE_SAVE', Date.now());
-                  navigate('/report', {
-                    state: { interviewData: results },
-                    replace: true
-                  });
-                }}
+                onClick={handleViewReport}
+                disabled={reportNavigationLock}
               >
                 View Detailed Report <FaArrowRight />
               </button>
@@ -581,6 +596,7 @@ const InterviewPage = () => {
             navigate("/");
             setTimeout(() => {
               sessionStorage.clear();
+              localStorage.clear();
             }, 100);
           }}
         >
@@ -747,17 +763,30 @@ const InterviewPage = () => {
               )}
             </div>
 
-            <div className="camera-monitor-container">
-              <CameraMonitor
-                onCheatingDetected={handleCheatingDetected}
-                isInterviewActive={isInterviewActive && !interviewCompleted}
-              />
+            <div className="camera-fixed-container">
+              <div className="camera-header">
+                <FaVideo className="camera-icon" />
+                <span>Live Proctoring</span>
+              </div>
+              <div className="camera-view">
+                <CameraMonitor
+                  onCheatingDetected={handleCheatingDetected}
+                  isInterviewActive={isInterviewActive && !interviewCompleted}
+                />
+              </div>
               {cheatingWarnings.length > 0 && (
                 <div className="cheating-alerts">
-                  <h4>⚠️ Warnings:</h4>
-                  {cheatingWarnings.map((msg, i) => (
-                    <p key={i}>{msg}</p>
-                  ))}
+                  <h4>
+                    <FaExclamationTriangle className="warning-icon" />
+                    Proctoring Alerts
+                  </h4>
+                  <div className="alert-messages">
+                    {cheatingWarnings.map((msg, i) => (
+                      <div key={i} className="alert-message">
+                        <FaCircle className="alert-dot" /> {msg}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -862,6 +891,7 @@ const InterviewPage = () => {
           setShowExitWarningModal(false);
           navigate("/interview");
           sessionStorage.clear();
+          localStorage.removeItem("lastInterviewResults");
         }}
         title="Interview Paused"
         message={
@@ -885,6 +915,7 @@ const InterviewPage = () => {
             endInterview();
             navigate("/interview");
             sessionStorage.clear();
+            localStorage.removeItem("lastInterviewResults");
           },
           variant: "danger",
         }}

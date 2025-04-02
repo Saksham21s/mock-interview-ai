@@ -1038,12 +1038,48 @@ html.dark .response-input {
   transition: transform 300ms ease-in-out;
 }
 
-.camera-monitor {
-  position: relative;
-  display: inline-block;
-  border: 2px solid #eee;
-  border-radius: 4px;
+.camera-fixed-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+  width: 280px;
+  border-radius: 12px;
   overflow: hidden;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e1e4e8;
+}
+
+.camera-header {
+  background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+  color: white;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+.camera-header .camera-icon {
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.camera-view {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  background: #000;
+}
+.camera-view video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
 .face-alert {
@@ -1051,42 +1087,36 @@ html.dark .response-input {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 6px;
+  padding: 10px;
   text-align: center;
   font-size: 12px;
   color: white;
-  animation: pulse 1.5s infinite;
+  font-weight: 500;
+  backdrop-filter: blur(2px);
+  z-index: 10;
 }
 
 .face-alert.no_face,
 .face-alert.face_unclr {
-  background: rgba(255, 59, 48, 0.8);
+  background: rgba(255, 59, 48, 0.85);
 }
 
 .face-alert.multiple_faces {
-  background: rgba(255, 149, 0, 0.8);
+  background: rgba(255, 149, 0, 0.85);
 }
 
-@keyframes pulse {
-  0% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.8;
-  }
-}
 .camera-off-placeholder {
-  width: 160px;
-  height: 120px;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
-  color: #666;
+  background: #000;
+  color: #aaa;
   font-size: 12px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .timer-sidebar {
