@@ -162,33 +162,38 @@ const CameraMonitor = ({ onCheatingDetected, isInterviewActive }) => {
 
   return (
     <div className="camera-fixed-container">
-      <div className="camera-header">
-        <FaVideo className="camera-icon" />
-        <span>Live Proctoring</span>
-      </div>
-      
-      <div className="camera-view">
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          playsInline
-          style={{ display: isCameraOn ? "block" : "none" }}
-        />
-        
-        {currentAlert && (
-          <div className={`face-alert ${currentAlert.type.toLowerCase()}`}>
-            {currentAlert.message}
-          </div>
-        )}
-        
-        {!isCameraOn && (
-          <div className="camera-off-placeholder">
-            {isInterviewActive ? "Starting camera..." : "Camera monitoring is off"}
-          </div>
-        )}
-      </div>
+    <div className="camera-header">
+      <FaVideo className="camera-icon" />
+      <span>Live Proctoring</span>
     </div>
+    
+    <div className="camera-view">
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        style={{
+          display: isCameraOn ? "block" : "none",
+          width: window.innerWidth < 600 ? "200px" : "275px",
+          height: window.innerWidth < 600 ? "140px" : "180px",
+          borderRadius: "10px"
+        }}
+      />
+      
+      {currentAlert && (
+        <div className={`face-alert ${currentAlert.type.toLowerCase()}`}>
+          {currentAlert.message}
+        </div>
+      )}
+      
+      {!isCameraOn && (
+        <div className="camera-off-placeholder">
+          {isInterviewActive ? "Starting camera..." : "Camera monitoring is off"}
+        </div>
+      )}
+    </div>
+  </div>
   );
 };
 

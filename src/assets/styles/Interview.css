@@ -1040,21 +1040,24 @@ html.dark .response-input {
 
 .camera-fixed-container {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
+  bottom: 20px;
+  right: 20px;
   z-index: 1000;
   width: 280px;
+  height: 220px;
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   border: 1px solid #e1e4e8;
+  display: flex;
+  flex-direction: column;
 }
 
 .camera-header {
   background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
   color: white;
-  padding: 12px 15px;
+  padding: 10px;
   display: flex;
   align-items: center;
   font-weight: 600;
@@ -1066,10 +1069,12 @@ html.dark .response-input {
 }
 
 .camera-view {
-  width: 100%;
-  height: 200px;
+  flex: 1;
   position: relative;
   background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .camera-view video {
   width: 100%;
@@ -1119,6 +1124,14 @@ html.dark .response-input {
   left: 0;
 }
 
+@media (max-width: 600px) {
+  .camera-fixed-container {
+    width: 200px;
+    height: 160px;
+    bottom: 15px;
+    right: 15px;
+  }
+}
 .timer-sidebar {
   flex: 1;
   background: rgba(67, 97, 238, 0.05);
@@ -2885,7 +2898,7 @@ code-snippet .function {
   .question-card {
     padding: 0.8rem;
     border-left-width: 2px;
-    max-width: 90%;
+    max-width: 100%;
   }
   .question-header {
     gap: 0.4rem;
