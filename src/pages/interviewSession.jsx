@@ -470,8 +470,7 @@ const InterviewPage = () => {
       cheatingWarnings: [...cheatingWarnings]
     };
 
-    // TRIPLE SAVE MECHANISM
-    // 1. Save to sessionStorage (immediate)
+    // 1. Save to sessionStorage 
     sessionStorage.setItem('interviewResults', JSON.stringify(interviewResults));
     sessionStorage.setItem('responses', JSON.stringify(responses));
 
@@ -911,12 +910,7 @@ const InterviewPage = () => {
         }}
         secondaryAction={{
           label: "End Interview",
-          onClick: () => {
-            endInterview();
-            navigate("/interview");
-            sessionStorage.clear();
-            localStorage.removeItem("lastInterviewResults");
-          },
+          onClick: endInterview,
           variant: "danger",
         }}
       />

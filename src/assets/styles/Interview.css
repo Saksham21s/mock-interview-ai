@@ -1275,7 +1275,9 @@ html.dark .response-input {
   padding: 2rem;
   background-color: #f8f9fa;
   flex-direction: row;
-  min-height: 100vh;
+  width: 100%;
+  height: auto;
+  overflow-y: auto;
   /*===========button design =============*/
 }
 @media (max-width: 480px) {
@@ -1294,6 +1296,7 @@ html.dark .response-input {
   max-width: 800px;
   width: 100%;
   text-align: center;
+  margin-bottom: 2rem;
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
 }
 .interview-completed__summary {
@@ -1566,24 +1569,30 @@ html.dark .response-input {
 }
 
 .output-container {
-  margin-top: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  overflow: hidden;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  background: #121222;
 }
-.output-container .output-header {
-  background: #f5f5f5;
-  padding: 0.5rem 1rem;
-  font-weight: 600;
+
+.output-frame {
+  width: 100%;
+  height: 20px;
+  background: #1e1e2f;
+  border: 1px solid #444;
+  border-radius: 5px;
+  display: block;
 }
-.output-container .output-content {
-  background: #f8f9fa;
-  padding: 1rem;
-  margin: 0;
+
+.output-message {
+  color: #cfcfcf;
   font-family: "Courier New", monospace;
-  white-space: pre-wrap;
-  max-height: 200px;
+  background: #121222;
+  padding: 10px;
+  border-radius: 5px;
+  height: 70px;
   overflow-y: auto;
+  white-space: pre-wrap;
 }
 
 .fullscreen-toggle {
@@ -3107,8 +3116,13 @@ code-snippet .function {
 /* Print Styles */
 @media print {
   body {
-    background: white !important;
-    color: black !important;
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 12px !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   .feedback-container {
     padding: 0;
@@ -3117,17 +3131,37 @@ code-snippet .function {
   .print-btn, .new-interview-btn {
     display: none !important;
   }
-  .question-card, .chart-card, .tip-card {
-    break-inside: avoid;
+  .question-card,
+  .chart-card,
+  .tip-card {
+    page-break-inside: avoid;
     box-shadow: none !important;
     border: 1px solid #ddd !important;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem !important;
   }
   .charts-section {
     display: block !important;
   }
   .improvement-cards {
     grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .content-container {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+  .question-card h3,
+  .chart-card h3,
+  .tip-card h3 {
+    font-size: 14px !important;
+    margin-bottom: 0.3rem !important;
+  }
+  .question-card p,
+  .chart-card p,
+  .tip-card p {
+    font-size: 12px !important;
+    margin-bottom: 0.2rem !important;
   }
 }
 /* Responsive Adjustments */

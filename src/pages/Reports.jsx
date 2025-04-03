@@ -93,60 +93,94 @@ const InterviewFeedback = () => {
 
   const extractKeywords = (text) => {
     if (!text) return [];
-    const words = text.toLowerCase().match(/\b(\w{4,})\b/g) || [];
-    const commonWords = new Set(['this', 'that', 'with', 'your', 'have', 'which']);
-    return [...new Set(words.filter(w => !commonWords.has(w)))].slice(0, 5);
-  };
+    const commonWords = new Set([
+      "this", "that", "with", "your", "have", "which", "from", "where", "what", 
+      "when", "who", "whom", "whose", "their", "there", "about", "after", 
+      "before", "could", "would", "should", "because", "under", "above", "below"
+    ]);
+  
+    // Sirf words match karo (numbers, symbols ignore honge)
+    const words = text.toLowerCase().match(/\b[a-zA-Z]{3,}\b/g) || [];
+  
+    // Calculate frequency of words
+    const wordFrequency = words.reduce((acc, word) => {
+      if (!commonWords.has(word)) {
+        acc[word] = (acc[word] || 0) + 1;
+      }
+      return acc;
+    }, {});
+  
+    // Sort words by frequency and return top 7
+    return Object.entries(wordFrequency)
+      .sort((a, b) => b[1] - a[1])
+      .map(([word]) => word)
+      .slice(0, 7); 
+  };  
 
   const calculateKeywordScore = (res) => {
-    if (!res.questionText) return 0.3;
+    if (!res?.questionText) return 0.3;
+  
     const questionKeywords = extractKeywords(res.questionText);
-    if (questionKeywords.length === 0) return 0.3;
-    const matchedKeywords = res.keywords.filter(k =>
-      questionKeywords.some(qk => qk.includes(k) || k.includes(qk))
-    ).length;
-    return Math.min(0.3, (matchedKeywords / questionKeywords.length) * 0.3);
-  };
+    if (!questionKeywords.length) return 0.3;
+  
+    const keywordSet = new Set(questionKeywords); 
+    const matchedCount = res.keywords.reduce((count, k) => count + keywordSet.has(k), 0);
+  
+    return Math.min(0.3, (matchedCount / questionKeywords.length) * 0.3);
+  };  
 
   const processReportData = (sessionData) => {
-    const responses = Array.isArray(sessionData.responses) ?
-      sessionData.responses.map(enhanceResponse) : [];
-
+    if (!sessionData?.responses) return sessionData;
+  
+    const responses = sessionData.responses.map(enhanceResponse);
+    
+    let correctCount = 0;
+    let excellent = 0, good = 0, average = 0, needsWork = 0;
+  
     const scoredResponses = responses.map(res => {
-      const lengthScore = Math.min(res.response?.length / 100, 0.3);
+      const lengthScore = Math.min((res.response?.length || 0) / 100, 0.3);
       const keywordScore = calculateKeywordScore(res);
       const randomVariance = (Math.random() * 0.1) - 0.05;
       const score = Math.min(0.4 + lengthScore + keywordScore + randomVariance, 1.0);
-
+      const roundedScore = parseFloat(score.toFixed(2));
+      const isCorrect = score > 0.65;
+  
+      // Category-wise classification
+      if (roundedScore >= 0.8) excellent++;
+      else if (roundedScore >= 0.6) good++;
+      else if (roundedScore >= 0.4) average++;
+      else needsWork++;
+  
+      if (isCorrect) correctCount++;
+  
       return {
         ...res,
-        score: parseFloat(score.toFixed(2)),
-        feedback: generateDynamicFeedback(res, score),
-        isCorrect: score > 0.65
+        score: roundedScore,
+        feedback: generateDynamicFeedback(res, roundedScore),
+        isCorrect
       };
     });
-
-    const correctCount = scoredResponses.filter(r => r.isCorrect).length;
-    const totalQuestions = scoredResponses.length || 1;
-    const accuracy = (correctCount / totalQuestions) * 100;
+  
+    const totalQuestions = scoredResponses.length;
+    const accuracy = totalQuestions ? (correctCount / totalQuestions) * 100 : 0;
     const roundPerformance = calculateRoundPerformance(scoredResponses);
     const improvementTips = generateDynamicTips(scoredResponses, accuracy);
-
+  
     return {
       ...sessionData,
       responses: scoredResponses,
       accuracyData: [
-        { name: 'Excellent', value: scoredResponses.filter(r => r.score >= 0.8).length },
-        { name: 'Good', value: scoredResponses.filter(r => r.score >= 0.6 && r.score < 0.8).length },
-        { name: 'Average', value: scoredResponses.filter(r => r.score >= 0.4 && r.score < 0.6).length },
-        { name: 'Needs Work', value: scoredResponses.filter(r => r.score < 0.4).length }
+        { name: 'Excellent', value: excellent },
+        { name: 'Good', value: good },
+        { name: 'Average', value: average },
+        { name: 'Needs Work', value: needsWork }
       ],
       roundPerformance,
       improvementTips,
       overallScore: accuracy,
       analysisDate: new Date().toLocaleString()
     };
-  };
+  };  
 
   const calculateRoundPerformance = (responses) => {
     const roundData = {};

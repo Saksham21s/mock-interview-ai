@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../assets/styles/App.min.css";
 import logo from "../assets/images/logo.webp";
-import { Sun, Moon, FileText, Tool } from "react-feather"; 
+import { Sun, Moon, FileText, Tool } from "react-feather";
 
-if (localStorage.getItem("darkMode") === "true") {
-  document.documentElement.classList.add("dark");
+//  System dark mode ignore karo aur default light mode enforce karo
+if (!localStorage.getItem("darkMode")) {
+  localStorage.setItem("darkMode", "false");
 }
+document.documentElement.classList.toggle("dark", localStorage.getItem("darkMode") === "true");
 
 function NavBar() {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
@@ -25,7 +27,7 @@ function NavBar() {
           <span className="logo-text">JOBSCRAFT</span>
         </Link>
       </div>
-  
+
       {/* Nav Links and Dark Mode Toggle */}
       <div className="nav-container">
         <div className="nav-links">
@@ -41,7 +43,7 @@ function NavBar() {
             <Tool className="nav-icon" /> Build Resume
           </a>
         </div>
-  
+
         {/* Dark Mode Toggle */}
         <div className="toggle-container">
           <label className="toggle-label">
@@ -64,7 +66,7 @@ function NavBar() {
         </div>
       </div>
     </div>
-  );  
+  );
 }
 
 export default NavBar;
