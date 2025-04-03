@@ -557,6 +557,18 @@ html.dark .homepage-wrapper .features-section .features-grid .feature-card .feat
     text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--primary-color);
   }
 }
+@media (min-width: 768px) and (max-width: 1023px) {
+  .homepage-wrapper .features-grid {
+    display: flex;
+    align-items: center;
+    gap: 6rem;
+  }
+  .homepage-wrapper .feature-card {
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+  }
+}
 .homepage-wrapper .testimonials-section {
   padding: 80px 0;
   text-align: center;
@@ -985,7 +997,7 @@ html.dark .footer {
   --input-text: #f0f0f0;
 }
 
-@media (max-width: 768px) {
+@media (min-width: 481px) and (max-width: 768px) {
   .footer {
     padding: 1.5rem 0 0;
   }

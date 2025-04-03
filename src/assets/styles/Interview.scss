@@ -3216,7 +3216,12 @@ $transition: all 0.3s ease;
       white-space: pre-wrap;
       line-height: 1.6;
       color: $dark-color;
+      max-height: 150px;
+      overflow-y: auto;
+      padding: 10px;
+      border-radius: 8px;
     }
+    
 
     .code-output {
       margin-top: 1rem;
