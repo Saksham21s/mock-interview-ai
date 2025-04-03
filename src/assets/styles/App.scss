@@ -1144,7 +1144,7 @@ html.dark .footer {
 }
 
 // Responsive Design
-@media (max-width: 768px) {
+@media (min-width: 481px) and (max-width: 768px) {
   .footer {
     padding: 1.5rem 0 0;
 
