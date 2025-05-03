@@ -21,17 +21,9 @@ This project is an **AI-powered mock interview tool** designed to help users pra
   - React.js (Vite.js for bundling)
   - Redux for state management
   - SCSS for styling
-  - Bootstrap or TailwindCSS for layout
+  - Tensorflow for ai monitoring
   - Monaco Editor for coding tests
   - react-pdf for resume generation
 - **Tools:**
   - Git and GitHub for version control
   - VSCode as the code editor
-
-## Installation
-
-To get started with the project, follow these steps:
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
